@@ -8,7 +8,7 @@
  * 
  * @return	Retorna el carácter leído desde el teclado.
  */
-int getch(void) __naked
+int getch() __naked
 {
 	__asm
 		ld c,#INNOE

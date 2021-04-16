@@ -9,7 +9,7 @@
  *
  * @return	La función getche retorna el carácter leído del teclado.
  */
-int getche(void) __naked
+int getche() __naked
 {
 	__asm
 		ld c,#CONIN

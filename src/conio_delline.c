@@ -7,7 +7,7 @@
  * inferiores a una línea anterior. La función delline funciona en la ventana 
  * de texto activa.
  */
-void delline(void)
+void delline()
 {
 	cputs(VT_DELLINE);
 }

@@ -11,7 +11,7 @@
  * 			de tecla; si hay una disponible, entonces el valor retornado es 
  * 			distinto a cero.
  */
-int kbhit(void)
+int kbhit()
 {
 	return ADDR_POINTER_WORD(PUTPNT) - ADDR_POINTER_WORD(GETPNT);
 }

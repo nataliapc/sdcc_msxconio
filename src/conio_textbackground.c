@@ -16,16 +16,12 @@ void _applyColors() __naked;
  * 
  * Existen varias constantes simbólicas de colores para usar.
  */
-void textbackground(uint8_t color) __naked
+void textbackground(uint8_t color) __naked __z88dk_fastcall
 {
 	__asm
-		push ix				; Get 'color' in A
-		ld ix,#4
-		add ix,sp
-		ld a,0(ix)
-		pop ix
+		ld a, l				// Get 'color' in A
+		ld (#BAKCLR),a		// Change BackColor in System Area
 
-		ld (#BAKCLR),a		; Change BackColor in System Area
-		jp __applyColors	; Apply color changes
+		jp __applyColors	// Apply color changes
 	__endasm;
 }

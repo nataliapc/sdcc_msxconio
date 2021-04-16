@@ -24,7 +24,7 @@ extern text_info _current_text_info;
  * 
  * Existen varias constantes simbólicas para indicar los modos de texto.
  */
-void textmode(int mode)
+void textmode(uint8_t mode) __z88dk_fastcall
 {
 	switch (mode) {
 		case BW40:

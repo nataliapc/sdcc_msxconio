@@ -14,9 +14,9 @@
  * 
  * @return	Retorna el último carácter mostrado en pantalla.
  */
-int cputs(const char *str)
+uint8_t cputs(const uint8_t *str) __z88dk_fastcall
 {
-	int ret = 0;
+	uint8_t ret = 0;
 	while (*str != 0) {
 		ret = putch(*str);
 		str++;

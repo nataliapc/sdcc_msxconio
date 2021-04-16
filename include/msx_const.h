@@ -18,6 +18,12 @@
 
 
 // ========================================================
+// MSX I/O Ports
+__sfr __at (0x98) IO_VDP1;
+__sfr __at (0x99) IO_VDP2;
+
+
+// ========================================================
 // MSX BIOS
 // http://map.grauw.nl/resources/msxbios.php
 //
@@ -26,6 +32,7 @@
 #define CHGCLR	0x062		// Changes the screen colors [Input: Foreground color in FORCLR | Background color in BAKCLR | Border color in BDRCLR]
 #define INITXT	0x06c		// Switches to SCREEN 0 (text screen with 40×24 characters)
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]
+
 
 // ========================================================
 // MSX-DOS 1.x BIOS
@@ -53,6 +60,7 @@
 #define WRBLK   0x26		// Random block read (FCB)		    MSX1
 #define RDBLK   0x27		// Random block write (FCB)		    MSX1
 
+
 // ========================================================
 // MSX/MSX2 system constants
 // http://map.grauw.nl/resources/msxsystemvars.php
@@ -70,6 +78,7 @@
 #define CSRSW		0xfca9	// (BYTE) Cursor display switch (0:hidden | 1:visible)
 #define CSTYLE		0xfcaa	// (BYTE) Cursor style (0:full cursor | other:halve cursor)
 #define EXPTBL		0xfcc1	// (BYTE) BIOS slot
+
 
 // ========================================================
 // MSX character codes and compatible sentences VT-52

@@ -12,7 +12,7 @@
 
 
 
-// ANCHOR =====================================================================
+// =====================================================================
 // Constants, Enums & Structs
 
 /**
@@ -103,7 +103,7 @@ void gettextinfo(text_info *ti);
  * 
  * Existen varias constantes simbólicas para indicar los modos de texto.
  */
-void textmode(int mode);
+void textmode(uint8_t mode) __z88dk_fastcall;
 
 /**
  * NOTE setcursortype
@@ -113,7 +113,7 @@ void textmode(int mode);
  *     NORMALCURSOR Cursor normal: el carácter de subrayado
  *     SOLIDCURSOR  Cursor es un cuadrado relleno
  */
-void setcursortype(int cursor_type);
+void setcursortype(uint8_t cursor_type) __z88dk_fastcall;
 
 /**
  * TODO highvideo
@@ -126,7 +126,7 @@ void setcursortype(int cursor_type);
  *
  * Character attribute (Blink)     0800-08EF (090D)
  */
-//void highvideo(void);
+//void highvideo();
 
 /**
  * TODO lowvideo
@@ -137,7 +137,7 @@ void setcursortype(int cursor_type);
  * directamente para la salida en modo texto después de llamar a la función 
  * lowvideo.
  */
-//void lowvideo(void);
+//void lowvideo();
 
 /**
  * TODO normvideo
@@ -148,7 +148,7 @@ void setcursortype(int cursor_type);
  * aquéllas mostradas por funciones que usan el vídeo directamente para la 
  * salida en modo texto después de llamar a la función normvideo.
  */
-//void normvideo(void);
+//void normvideo();
 
 /**
  * NOTE textcolor
@@ -164,7 +164,7 @@ void setcursortype(int cursor_type);
  *
  * Existen varias constantes simbólicas de colores para usar.
  */
-void textcolor(uint8_t color);
+void textcolor(uint8_t color) __z88dk_fastcall;
 
 /**
  * NOTE textbackground
@@ -179,7 +179,7 @@ void textcolor(uint8_t color);
  * 
  * Existen varias constantes simbólicas de colores para usar.
  */
-void textbackground(uint8_t color);
+void textbackground(uint8_t color) __z88dk_fastcall;
 
 /**
  * TODO textblink
@@ -188,10 +188,10 @@ void textbackground(uint8_t color);
  * ==0 - Para desactivarlo
  * !=0 - Para activarlo
  */
-//void textblink(uint8_t enabled);
+//void textblink(uint8_t enabled) __z88dk_fastcall;
 
 /**
- * TODO textattr
+ * NOTE textattr
  * Esta función asigna los colores de primer plano y de fondo en una sola 
  * llamada. (Normalmente, se asignan estos atributos mediante las funciones 
  * a textcolor y textbackground). La función textattr no afecta cualesquiera 
@@ -231,7 +231,7 @@ void textbackground(uint8_t color);
  * estén colocados en las posiciones correctas de los bits.
  * Existen varias constantes simbólicas de colores para usar.
  */
-//void textattr(int atributo);
+void textattr(uint16_t attribute) __z88dk_fastcall;
 
 // ANCHOR =====================================================================
 // Screen positions & areas
@@ -266,7 +266,7 @@ void gotoxy(uint8_t x, uint8_t y);
  * @return	La función wherex retorna un número entero entre 0 y menor al 
  * 			número de columnas en el modo de texto en uso.
  */
-int wherex(void);
+int wherex();
 
 /**
  * NOTE wherey
@@ -276,7 +276,7 @@ int wherex(void);
  * @return	La función wherey retorna un número entero entre 0 y menor al 
  * 			número de filas en el modo de texto en uso.
  */
-int wherey(void);
+int wherey();
 
 /**
  * TODO gettext
@@ -356,7 +356,7 @@ int wherey(void);
  * @return	Retorna el carácter mostrado, si tiene éxito; si ocurre un error, 
  * 			entonces retorna EOF.
  */
-int putch(int c);
+uint8_t putch(uint8_t c) __z88dk_fastcall;
 
 /**
  * TODO cprintf
@@ -387,7 +387,7 @@ int putch(int c);
  * 
  * @return	Retorna el último carácter mostrado en pantalla.
  */
-int cputs(const char *cadena);
+uint8_t cputs(const uint8_t *cadena) __z88dk_fastcall;
 
 /**
  * NOTE clrscr
@@ -396,7 +396,7 @@ int cputs(const char *cadena);
  *
  * Initial screen position in original conio library is (1,1).
  */
-void clrscr(void);
+void clrscr();
 
 /**
  * NOTE clreol
@@ -404,7 +404,7 @@ void clrscr(void);
  * hasta el final de la línea dentro de la ventana de texto actual, sin mover 
  * la posición del cursor.
  */
-void clreol(void);
+void clreol();
 
 /**
  * NOTE insline
@@ -413,7 +413,7 @@ void clreol(void);
  * vacía son mudadas una línea más abajo, y la línea inferior es mudada fuera 
  * de la ventana.
  */
-void insline(void);
+void insline();
 
 /**
  * NOTE delline
@@ -421,7 +421,7 @@ void insline(void);
  * inferiores a una línea anterior. La función delline funciona en la ventana 
  * de texto activa.
  */
-void delline(void);
+void delline();
 
 
 // ANCHOR =====================================================================
@@ -436,7 +436,7 @@ void delline(void);
  * 			de tecla; si hay una disponible, entonces el valor retornado es 
  * 			distinto a cero.
  */
-int kbhit(void);
+int kbhit();
 
 /**
  * NOTE getch
@@ -445,7 +445,7 @@ int kbhit(void);
  * 
  * @return	Retorna el carácter leído desde el teclado.
  */
-int getch(void);
+int getch();
 
 /**
  * NOTE getche
@@ -454,7 +454,7 @@ int getch(void);
  *
  * @return	La función getche retorna el carácter leído del teclado.
  */
-int getche(void);
+int getche();
 
 /**
  * TODO ungetch
@@ -466,7 +466,7 @@ int getche(void);
  * @return	La función ungetch retorna el carácter empujado, si tiene éxito; 
  * 			si no, entonces retorna EOF.
  */
-//int ungetch(int c);
+//int ungetch(int c) __z88dk_fastcall;
 
 /**
  * TODO cgets
@@ -486,13 +486,13 @@ int getche(void);
  * @return	Retorna la cadena de caracteres a partir de cadena[2], si tiene 
  * 			éxito.
  */
-//char *cgets(char *cadena);
+//char *cgets(char *cadena) __z88dk_fastcall;
 
 /**
  * TODO getpass
  * Lee una contraseña desde la consola del sistema después de mostrar un 
  * mensaje, el cual es una cadena de caracteres (terminada en un carácter 
- * nulo) apuntada por el argumento mensaje y desactivando la salida de texto.
+ * nulo) apuntada por el argumento message y desactivando la salida de texto.
  * 
  * @return	Retorna un puntero estático a la cadena de caracteres con el 
  * 			carácter nulo al final conteniendo la contraseña. Esta cadena 
@@ -500,7 +500,7 @@ int getche(void);
  * 			vez que la función getpass es llamada, la cadena de caracteres es 
  * 			sobrescrita.
  */
-//char *getpass(const char *mensaje);
+//char *getpass(const char *message) __z88dk_fastcall;
 
 /**
  * TODO cscanf
@@ -530,7 +530,7 @@ int getche(void);
  * @return	Retorna el valor leído de una palabra (word) de tamaño desde el 
  *			puerto apuntado por el argumento id_puerto e id_puerto+1.
  */
-//int inport(int id_puerto);
+//int inport(int id_puerto) __z88dk_fastcall;
 
 /**
  * TODO outport

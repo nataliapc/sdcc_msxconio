@@ -9,20 +9,15 @@
 ; @return	Retorna el carácter mostrado, si tiene éxito; si ocurre un error, 
 ; 			entonces retorna EOF.
 
-;int putch(int c);
+;uint8_t putch(uint8_t c) __z88dk_fastcall;
 _putch::
-    pop af
-    pop de
-    push de
-    push af
-
-    ld a,e
+    ld e,l
     
     ld c,#0x02  ;CONOUT
     call 5
 
-    ld l, e
-    ld h, #0
+    ld l,e
+    ld h,#0
 
     ret
 

@@ -9,7 +9,7 @@
  *     NORMALCURSOR Cursor normal: el carácter de subrayado
  *     SOLIDCURSOR  Cursor es un cuadrado relleno
  */
-void setcursortype(int cursor_type)
+void setcursortype(uint8_t cursor_type) __z88dk_fastcall
 {
 	switch (cursor_type) {
 		case NOCURSOR:

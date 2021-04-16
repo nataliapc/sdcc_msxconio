@@ -8,7 +8,7 @@
  * vacía son mudadas una línea más abajo, y la línea inferior es mudada fuera 
  * de la ventana.
  */
-void insline(void)
+void insline()
 {
 	cputs(VT_INSLINE);
 }

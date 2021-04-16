@@ -53,6 +53,9 @@ int main(char **argv, int argc)
 	cputs("## textbackground(WHITE)\r\n");
 	getch();
 
+	textattr(0xf1);
+	cputs("## textattr(0xf1)\r\n");
+	getch();
 
 
 	return 0;

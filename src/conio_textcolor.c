@@ -15,16 +15,12 @@
  *
  * Existen varias constantes simbólicas de colores para usar.
  */
-void textcolor(uint8_t color)
+void textcolor(uint8_t color) __z88dk_fastcall
 {
 	__asm
-		push ix				; Get 'color' in A
-		ld ix,#4
-		add ix,sp
-		ld a,0(ix)
-		pop ix
+		ld a, l				// Get 'color' in A
+		ld (#FORCLR),a		// Change ForeColor in System Area
 
-		ld (#FORCLR),a		; Change ForeColor in System Area
-		jp __applyColors	; Apply color changes
+		jp __applyColors	// Apply color changes
 	__endasm;
 }

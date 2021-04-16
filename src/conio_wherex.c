@@ -9,7 +9,12 @@
  * @return	La función wherex retorna un número entero entre 0 y menor al 
  * 			número de columnas en el modo de texto en uso.
  */
-int wherex(void)
+int wherex() __naked
 {
-	return ADDR_POINTER_BYTE(CSRX) - 1;
+	__asm
+		ld  a,(#CSRX)
+		dec a
+		ld  l,a
+		ret
+	__endasm;
 }

@@ -9,7 +9,12 @@
  * @return	La función wherey retorna un número entero entre 0 y menor al 
  * 			número de filas en el modo de texto en uso.
  */
-int wherey(void)
+int wherey() __naked
 {
-	return ADDR_POINTER_BYTE(CSRY) - 1;
+	__asm
+		ld  a,(#CSRY)
+		dec a
+		ld  l,a
+		ret
+	__endasm;
 }

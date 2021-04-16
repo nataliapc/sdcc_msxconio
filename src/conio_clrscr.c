@@ -8,7 +8,7 @@
  *
  * Initial screen position in original conio library is (1,1).
  */
-void clrscr(void)
+void clrscr()
 {
 	cputs(VT_CLRSCR);
 }
