@@ -32,6 +32,7 @@ void textmode(uint8_t mode) __z88dk_fastcall
 			_current_text_info.normattr = 0;
 			_current_text_info.currmode = mode;
 			_current_text_info.screenwidth = 40;
+			_current_text_info.vramCharMap = 0x0000;
 			break;
 
 		case BW80:
@@ -39,6 +40,7 @@ void textmode(uint8_t mode) __z88dk_fastcall
 			_current_text_info.normattr = 0;
 			_current_text_info.currmode = mode;
 			_current_text_info.screenwidth = 80;
+			_current_text_info.vramCharMap = 0x0000;
 			break;
 
 		default:

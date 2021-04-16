@@ -18,7 +18,7 @@ int main(char **argv, int argc)
 	printf("## getch() = '%c'\n", getch());
 	printf("## getche() = '%c'\n", getche());
 
-	gotoxy(0,0);
+	gotoxy(1,1);
 	cputs("## gotoxy()\r\n");
 	insline(); getch();
 	cputs("## insline()\r\n");
@@ -57,6 +57,9 @@ int main(char **argv, int argc)
 	cputs("## textattr(0xf1)\r\n");
 	getch();
 
+	uint8_t buffer[40*24];
+	gettext(1, 1, 40, 24, buffer);
+	puttext(41, 1, 80, 24, buffer);
 
 	return 0;
 }

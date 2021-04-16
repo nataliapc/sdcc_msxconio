@@ -9,7 +9,9 @@
  */
 void gotoxy(uint8_t x, uint8_t y)
 {
+	if (x<1 || y<1) return;
+
 	cputs(VT_GOTOXY);
-	putch(x+32);
-	putch(y+32);
+	putch(31+x);
+	putch(31+y);
 }

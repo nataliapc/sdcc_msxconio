@@ -29,6 +29,8 @@ __sfr __at (0x99) IO_VDP2;
 //
 #define CALSLT 	0x01c		// Executes inter-slot call [Input: IY-High byte with slot ID | IX-The address that will be called]
 #define WRTVDP	0x047		// Write data in the VDP-register [Input: B-Data to write | C-Register] [Changes: AF,BC]
+#define LDIRMV	0x059		// Block transfer to memory from VRAM [Input: BC-Length|DE-Start memory address|HL-VRAM address][Changes: ALL]
+#define LDIRVM	0x05C		// Block transfer to VRAM from memory [Input: BC-Length|DE-VRAM address|HL-Start memory address][Changes: ALL]
 #define CHGCLR	0x062		// Changes the screen colors [Input: Foreground color in FORCLR | Background color in BAKCLR | Border color in BDRCLR]
 #define INITXT	0x06c		// Switches to SCREEN 0 (text screen with 40×24 characters)
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]

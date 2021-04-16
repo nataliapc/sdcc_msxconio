@@ -68,6 +68,8 @@ typedef struct {
 	uint8_t screenwidth;    // Anchura de la pantalla de texto
 	uint8_t curx;           // Coordenada X de la ventana en uso
 	uint8_t cury;           // Coordenada Y de la ventana en uso
+	//Only MSX
+	uint8_t vramCharMap;	// Address at VRAM for chars(tiles) map
 } text_info;
 
 
@@ -171,7 +173,7 @@ void textcolor(uint8_t color) __z88dk_fastcall;
  * Esta función selecciona el color de fondo especificado por el argumento 
  * color. Esta función solamente funciona con aquellas funciones que envían 
  * datos de salida en modo texto directamente a la pantalla. El argumento 
- * color es un número entero entre 0 y 7; también se pueden usar constantes 
+ * color es un número entero entre 0 y 15; también se pueden usar constantes 
  * simbólicas definidas en conio.h en lugar de enteros. La función textattr no 
  * afecta cualesquiera de los caracteres actualmente en pantalla, pero sí 
  * afecta aquéllas mostradas por funciones que usan el vídeo directamente para 
@@ -243,7 +245,7 @@ void textattr(uint16_t attribute) __z88dk_fastcall;
  * argumentos derecha e inferior, que describen la esquina inferior derecha. 
  * El tamaño mínimo de la ventana de texto es una columna por una fila. La 
  * ventana por defecto es la pantalla completa con la esquina superior 
- * izquierda siendo (0,0) y la inferior derecha siendo (C,F); donde C es menor 
+ * izquierda siendo (1,1) y la inferior derecha siendo (C,F); donde C es menor 
  * al número columnas y F menor al número filas según el modo de texto en uso.
  * La llamada a la función window será ignorada si alguno de los argumentos no 
  * son válidos.
@@ -263,23 +265,23 @@ void gotoxy(uint8_t x, uint8_t y);
  * Obtiene la coordenada x de la posición del cursor actual (dentro de la 
  * ventana de texto en uso).
  * 
- * @return	La función wherex retorna un número entero entre 0 y menor al 
- * 			número de columnas en el modo de texto en uso.
+ * @return	La función wherex retorna un número entero entre 1 y el número
+ * 			de columnas en el modo de texto en uso.
  */
-int wherex();
+uint8_t wherex();
 
 /**
  * NOTE wherey
  * Obtiene la coordenada y de la posición del cursor actual (dentro de la 
  * ventana de texto en uso).
  * 
- * @return	La función wherey retorna un número entero entre 0 y menor al 
- * 			número de filas en el modo de texto en uso.
+ * @return	La función wherey retorna un número entero entre 1 y el número
+ * 			de filas en el modo de texto en uso.
  */
-int wherey();
+uint8_t wherey();
 
 /**
- * TODO gettext
+ * NOTE gettext
  * Guarda el contenido en un rectángulo de texto en pantalla definido por los 
  * argumentos izquierda y superior, que describen la esquina superior izquierda
  * y por los argumentos derecha e inferior, que describen la esquina inferior 
@@ -297,10 +299,10 @@ int wherey();
  * @return	Retorna 1 si la operación tiene éxito. Si hay un error, como es el 
  *			caso de acceder fuera de la pantalla, retorna el valor de 0.
  */
-//int gettext(int izquierda, int superior, int derecha, int inferior, void *destino);
+uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *target);
 
 /**
- * TODO puttext
+ * NOTE puttext
  * Imprime el contenido en un rectángulo de texto en pantalla definido por los 
  * argumentos izquierda y superior, que describen la esquina superior 
  * izquierda y por los argumentos derecha e inferior, que describen la esquina 
@@ -321,7 +323,7 @@ int wherey();
  * 			tiene éxito. Si ocurre un error, como es el caso de acceder fuera 
  * 			de la pantalla, entonces retorna el valor de 0.
  */
-//int puttext(int izquierda, int superior, int derecha, int inferior, void *origen);
+uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *source);
 
 /**
  * TODO movetext
@@ -335,9 +337,11 @@ int wherey();
  * ocupan el mismo área son mudados acordemente. La función movetext usa la 
  * salida de vídeo directamente.
  * 
- * @return	La función movetext retorna un valor distinto a 0, si la operación tiene éxito. Si ocurre un error, como es el caso de acceder fuera de la pantalla, entonces retorna el valor de 0.
+ * @return	La función movetext retorna un valor distinto a 0, si la operación 
+ * 			tiene éxito. Si ocurre un error, como es el caso de acceder fuera 
+ * 			de la pantalla, entonces retorna el valor de 0.
  */
-//int movetext(int izquierda, int superior, int derecha, int inferior, int destino_izquierda, int destino_superior);
+//uint8_t movetext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, uint8_t dst_left, uint8_t dst_top);
 
 
 // ANCHOR =====================================================================
@@ -392,7 +396,7 @@ uint8_t cputs(const uint8_t *cadena) __z88dk_fastcall;
 /**
  * NOTE clrscr
  * Esta función despeja la ventana de texto actual y coloca el cursor en la 
- * esquina superior izquierda: posición (0,0).
+ * esquina superior izquierda: posición (1,1).
  *
  * Initial screen position in original conio library is (1,1).
  */

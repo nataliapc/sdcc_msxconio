@@ -44,6 +44,7 @@
  */
 void textattr(uint16_t attribute) __naked __z88dk_fastcall
 {
+	//TODO apply blink bit
 	__asm
 		ld a,l				// Change BackColor in System Area
 		and #0x0f
