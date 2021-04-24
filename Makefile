@@ -49,7 +49,7 @@ $(TEST): $(LIBS) $(CRT) $(patsubst $(TESTDIR)%, $(OBJDIR), $(wildcard $(TESTDIR)
 	@mv $(OBJDIR)$(TEST) $(TESTDIR)$(TEST)
 
 run: $(LIBS) $(TEST)
-	openmsx -machine msx2_eu -diska $(TESTDIR)
+	openmsx -machine msx2_eu -ext debugdevice -diska $(TESTDIR)
 
 clean:
 	@rm -f $(TESTDIR)$(TEST)

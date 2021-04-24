@@ -6,12 +6,17 @@
 #ifndef  __MSX_CONST_H__
 #define  __MSX_CONST_H__
 
+#include <stdint.h>
+
 
 // ========================================================
 // Tools
 #define DOSCALL  	call 5
 #define BIOSCALL 	ld iy,(#EXPTBL-1) \
                 	call CALSLT
+#define JP_BIOSCALL ld iy,(#EXPTBL-1) \
+                	jp CALSLT
+#define ASM_HALT	__asm halt __endasm;
 
 #define ADDR_POINTER_BYTE(X)	(*((uint8_t*)X))
 #define ADDR_POINTER_WORD(X)	(*((uint16_t*)X))
@@ -29,8 +34,10 @@ __sfr __at (0x99) IO_VDP2;
 //
 #define CALSLT 	0x01c		// Executes inter-slot call [Input: IY-High byte with slot ID | IX-The address that will be called]
 #define WRTVDP	0x047		// Write data in the VDP-register [Input: B-Data to write | C-Register] [Changes: AF,BC]
+#define SETRD	0x050		// Sets VRAM address to read [Input: HL-VRAM address (00000h~03FFFh)][Changes: AF]
+#define SETWRT	0x053		// Sets VRAM address to write [Input: HL-VRAM address (00000h~03FFFh)][Changes: AF]
 #define LDIRMV	0x059		// Block transfer to memory from VRAM [Input: BC-Length|DE-Start memory address|HL-VRAM address][Changes: ALL]
-#define LDIRVM	0x05C		// Block transfer to VRAM from memory [Input: BC-Length|DE-VRAM address|HL-Start memory address][Changes: ALL]
+#define LDIRVM	0x05c		// Block transfer to VRAM from memory [Input: BC-Length|DE-VRAM address|HL-Start memory address][Changes: ALL]
 #define CHGCLR	0x062		// Changes the screen colors [Input: Foreground color in FORCLR | Background color in BAKCLR | Border color in BDRCLR]
 #define INITXT	0x06c		// Switches to SCREEN 0 (text screen with 40×24 characters)
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]
@@ -69,12 +76,14 @@ __sfr __at (0x99) IO_VDP2;
 // https://www.msx.org/wiki/System_variables_and_work_area
 //
 #define LINL40		0xf3ae	// (BYTE) Width for SCREEN 0 (default 37)
-#define LINLEN		0xf3B0	// (BYTE) Current screen width per line
-#define CRTCNT		0xf3B1	// (BYTE) Number of lines of current screen (default 24)
+#define LINLEN		0xf3b0	// (BYTE) Current screen width per line
+#define CRTCNT		0xf3b1	// (BYTE) Number of lines of current screen (default 24)
+#define CLIKSW		0xf3db	// (BYTE) Key click switch. (0 = Disabled / 1 = Enabled)
 #define CSRY		0xf3dc	// (BYTE) Y-coordinate of text cursor
 #define CSRX		0xf3dd	// (BYTE) X-coordinate of text cursor
 #define FORCLR		0xf3e9	// (BYTE) Foreground colour
 #define BAKCLR		0xf3eA	// (BYTE) Background colour
+#define REPCNT		0xf3f7	// (BYTE) Delay until the auto-repeat of the key begins. (50 by default)
 #define PUTPNT		0xf3f8	// (WORD) Address in the keyboard buffer where a character will be written
 #define GETPNT		0xf3fa	// (WORD) Address in the keyboard buffer where the next character is read
 #define CSRSW		0xfca9	// (BYTE) Cursor display switch (0:hidden | 1:visible)
@@ -103,6 +112,13 @@ __sfr __at (0x99) IO_VDP2;
 #define  VT_CURHIDE		"\x1B""x5"	// Removes the cursor
 #define  VT_CURHALF		"\x1B""y4"	// Cursor to half size
 #define  VT_CURSHOW		"\x1B""y5"	// Shows the cursor
+
+#define  KEY_TAB		 9
+#define  KEY_UP			30
+#define  KEY_DOWN		31
+#define  KEY_RIGHT		28
+#define  KEY_LEFT		29
+#define  KEY_ENTER		13
 
 
 #endif //__MSX_CONST_H__

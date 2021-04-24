@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  CONIO Library
+ *  CONIO Library port for MSX2 (SCREEN 0)
  *  https://web.archive.org/web/20090225093706/http://c.conclase.net/Borland/funcion.php?fun=inport
  * ============================================================================
  */
@@ -299,7 +299,7 @@ uint8_t wherey();
  * @return	Retorna 1 si la operación tiene éxito. Si hay un error, como es el 
  *			caso de acceder fuera de la pantalla, retorna el valor de 0.
  */
-uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *target);
+uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *target);
 
 /**
  * NOTE puttext
@@ -323,7 +323,7 @@ uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *
  * 			tiene éxito. Si ocurre un error, como es el caso de acceder fuera 
  * 			de la pantalla, entonces retorna el valor de 0.
  */
-uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *source);
+uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *source);
 
 /**
  * TODO movetext
@@ -551,13 +551,13 @@ int getche();
  * NOTE inportb
  * Lee 1 byte desde el puerto indicado por el argumento id_puerto.
  */
-uint8_t inportb(uint8_t id_puerto) __z88dk_fastcall;
+uint8_t inportb(uint8_t port) __z88dk_fastcall;
 
 /**
  * NOTE outportb
  * Escribe 1 byte al puerto de salida indicado por el argumento id_puerto.
  */
-void outportb(uint8_t id_puerto, uint8_t valor);
+void outportb(uint8_t port, uint8_t value);
 
 
 

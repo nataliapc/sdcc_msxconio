@@ -1,5 +1,6 @@
 #include "msx_const.h"
 #include "conio.h"
+#include "heap.h"
 #include <stdio.h>
 
 
@@ -57,9 +58,10 @@ int main(char **argv, int argc)
 	cputs("## textattr(0xf1)\r\n");
 	getch();
 
-	uint8_t buffer[40*24];
-	gettext(1, 1, 40, 24, buffer);
-	puttext(41, 1, 80, 24, buffer);
+	char *buf = malloc(40*24);
+	gettext(1, 1, 40, 24, buf);
+	puttext(41, 1, 80, 24, buf);
+	free(40*24);
 
 	return 0;
 }

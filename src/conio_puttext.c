@@ -1,6 +1,7 @@
 #include "msx_const.h"
 #include "conio.h"
-#include <string.h>
+
+#include <stdio.h>
 
 
 extern text_info _current_text_info;
@@ -27,16 +28,16 @@ void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size);
  * 			tiene éxito. Si ocurre un error, como es el caso de acceder fuera 
  * 			de la pantalla, entonces retorna el valor de 0.
  */
-uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *source)
+uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *source)
 {
-	uint16_t pos = _current_text_info.vramCharMap + (top-1) * _current_text_info.screenwidth + (left-1);
-	uint8_t width = right - left + 1;
+	uint16_t pos = _current_text_info.vramCharMap + (top-1) * _current_text_info.screenwidth + left - 1;
 	uint16_t aux = (uint16_t)source;
+	uint16_t width = right - left + 1;
 
 	for (uint8_t i=top; i<=bottom; i++) {
 		_copyRAMtoVRAM(aux, pos, width);
-		pos += _current_text_info.screenwidth;
 		aux += width;
+		pos += _current_text_info.screenwidth;
 	}
 	return 1;
 }

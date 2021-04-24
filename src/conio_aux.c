@@ -19,8 +19,7 @@ void _applyColors() __naked
 		ld  b, a			// Call to change RegVDP#7
 		ld  c, #7
 		ld ix, #WRTVDP
-		BIOSCALL
-		ret
+		JP_BIOSCALL
 	__endasm;
 }
 
@@ -41,8 +40,19 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked
 		push hl
 		push af
 
-		ld ix, #LDIRMV
+		ld ix, #SETRD
 		BIOSCALL
+
+		di
+		ex de,hl
+		ld a,b
+		ld b,c
+		ld c,#0x98
+.loopVR$:
+		inir
+		dec a
+		jp pe,.loopVR$
+		ei
 		ret
 	__endasm;
 }
@@ -56,16 +66,27 @@ void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked
 {
 	__asm
 		pop af
-		pop hl
 		pop de
+		pop hl
 		pop bc
 		push bc
-		push de
 		push hl
+		push de
 		push af
 
-		ld ix, #LDIRVM
+		ld ix, #SETWRT
 		BIOSCALL
+
+		di
+		ex de,hl
+		ld a,b
+		ld b,c
+		ld c,#0x98
+.loopRV$:
+		otir
+		dec a
+		jp pe,.loopRV$
+		ei
 		ret
 	__endasm;
 }

@@ -11,7 +11,6 @@ void gotoxy(uint8_t x, uint8_t y)
 {
 	if (x<1 || y<1) return;
 
-	cputs(VT_GOTOXY);
-	putch(31+x);
-	putch(31+y);
+	ADDR_POINTER_BYTE(CSRX)=x;
+	ADDR_POINTER_BYTE(CSRY)=y;
 }

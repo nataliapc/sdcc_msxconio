@@ -23,11 +23,11 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size);
  * @return	Retorna 1 si la operación tiene éxito. Si hay un error, como es el 
  *			caso de acceder fuera de la pantalla, retorna el valor de 0.
  */
-uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, char *target)
+uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *target)
 {
 	uint16_t pos = _current_text_info.vramCharMap + (top-1) * _current_text_info.screenwidth + (left-1);
-	uint8_t width = right - left + 1;
 	uint16_t aux = (uint16_t)target;
+	uint16_t width = right - left + 1;
 
 	for (uint8_t i=top; i<=bottom; i++) {
 		_copyVRAMtoRAM(pos, aux, width);
