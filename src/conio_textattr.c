@@ -1,5 +1,6 @@
 #include "msx_const.h"
 #include "conio.h"
+#include "conio_aux.h"
 
 
 /**
@@ -16,22 +17,23 @@
  * Estandar
  *   Bits	
  *     7 6 5 4 3 2 1 0
- *     B f f f p p p p
+ *     B b b b f f f f
  *   En el argumento atributo de 8 bits:
- *     pppp es el color de primer plano de 4 bits (0-15).
- *     fff es el color de fondo de 3 bits (0-7).
+ *     ffff es el color de primer plano de 4 bits (0-15).
+ *     bbb es el color de fondo de 3 bits (0-7).
  *     B es el bit de encendido de parpadeo.
- * MSX
- *   Attributo de 9 bits:
- *     8 7 6 5 4 3 2 1 0
- *     B f f f f p p p p
- *   Valores:
- *     pppp color del primer plano (0-15)
- *     ffff color de fondo (0-15)
- *     B bit de encendido de parpadeo.
  *
- * Si el bit del parpadeo está activado, entonces los caracteres parpadean. 
- * Esto se puede lograr añadiendo la constante BLINK al atributo.
+ * MSX
+ *   Attributo de 16 bits:
+ *     F E D C B A 9 8 7 6 5 4 3 2 1 0
+ *     F F F F B B B B f f f f b b b b
+ *   Valores:
+ *     ffff foreground color (0-15)
+ *     bbbb background color (0-15)
+ *     FFFF foreground blink color (0-15)
+ *     BBBB background blink color (0-15)
+ *
+ * If FFFF and BBBB are 0 the blink mode is disabled.
  * 
  * Si se usan las constantes simbólicas definidas en conio.h para crear los 
  * atributos de texto usando textattr, ten en cuenta las siguientes 
@@ -42,21 +44,21 @@
  * estén colocados en las posiciones correctas de los bits.
  * Existen varias constantes simbólicas de colores para usar.
  */
-void textattr(uint16_t attribute) __naked __z88dk_fastcall
+void textattr(uint16_t attribute) __z88dk_fastcall
 {
-	//TODO apply blink bit
-	__asm
-		ld a,l				// Change BackColor in System Area
-		and #0x0f
-		ld (#BAKCLR),a
+	_current_text_info.attribute = attribute;
+	
+	ADDR_POINTER_BYTE(FORCLR) = ((uint8_t)attribute) >> 4;
+	ADDR_POINTER_BYTE(BAKCLR) = ((uint8_t)attribute) & 0x0f;
+	
+	attribute >>= 8;
+	if (attribute==0) {
+		_setRegVDP(0x0c00);
+		_setRegVDP(0x0d00);
+	} else {
+		_setRegVDP(0x0c00 | attribute);
+		_setRegVDP(0x0d10);
+	}
 
-		ld a,l				// Change ForeColor in System Area
-		srl a
-		srl a
-		srl a
-		srl a
-		ld (#FORCLR),a
-		
-		jp __applyColors	// Apply color changes
-	__endasm;
+	_applyColors();		// Apply color changes
 }

@@ -1,5 +1,6 @@
 #include "msx_const.h"
 #include "conio.h"
+#include "conio_aux.h"
 
 
 /**
@@ -10,5 +11,6 @@
  */
 void clrscr()
 {
-	cputs(VT_CLRSCR);
+	_fillVRAM(_current_text_info.vramCharMap, 0x800, 32);
+	_fillVRAM(ADR_BLINK, 0xf0, 0);
 }

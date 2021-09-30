@@ -61,8 +61,8 @@ typedef struct {
 	uint8_t wintop;         // Coordenada superior de la ventana
 	uint8_t winright;       // Coordenada derecha de la ventana
 	uint8_t winbottom;      // Coordenada inferior de la ventana
-	uint8_t attribute;      // Atributo de texto
-	uint8_t normattr;       // Atributo normal
+	uint16_t attribute;     // Current text attributes.
+	uint16_t normattr;      // Attributes before textmode() was called.
 	uint8_t currmode;       // Modo en Uso: BW40, BW80, C40, C80, ó C4350
 	uint8_t screenheight;   // Altura de la pantalla de texto
 	uint8_t screenwidth;    // Anchura de la pantalla de texto
@@ -157,12 +157,11 @@ void setcursortype(uint8_t cursor_type) __z88dk_fastcall;
  * Esta función selecciona el color de texto especificado por el argumento 
  * color. Esta función solamente funciona con aquellas funciones que envían 
  * datos de salida en modo texto directamente a la pantalla. El argumento 
- * color es un número entero entre 0 y 15 y el número 128, para activar el 
- * parpadeo; también se pueden usar constantes simbólicas definidas en conio.h 
- * en lugar de enteros. La función textcolor no afecta a ninguno de los 
- * caracteres actualmente en pantalla, pero sí afecta aquéllas mostradas por 
- * funciones que usan el vídeo directamente para la salida en modo texto 
- * después de llamar a la función textcolor.
+ * color es un número entero entre 0 y 15; también se pueden usar constantes 
+ * simbólicas definidas en conio.h en lugar de enteros. La función textcolor 
+ * no afecta a ninguno de los caracteres actualmente en pantalla, pero sí 
+ * afecta aquéllas mostradas por funciones que usan el vídeo directamente para 
+ * la salida en modo texto después de llamar a la función textcolor.
  *
  * Existen varias constantes simbólicas de colores para usar.
  */
@@ -212,17 +211,18 @@ void textbackground(uint8_t color) __z88dk_fastcall;
  *     pppp es el color de primer plano de 4 bits (0-15).
  *     fff es el color de fondo de 3 bits (0-7).
  *     B es el bit de encendido de parpadeo.
- * MSX
- *   Attributo de 9 bits:
- *     8 7 6 5 4 3 2 1 0
- *     B f f f f p p p p
- *   Valores:
- *     pppp color del primer plano (0-15)
- *     ffff color de fondo (0-15)
- *     B bit de encendido de parpadeo.
  *
- * Si el bit del parpadeo está activado, entonces los caracteres parpadean. 
- * Esto se puede lograr añadiendo la constante BLINK al atributo.
+ * MSX
+ *   Attributo de 16 bits:
+ *     F E D C B A 9 8 - 7 6 5 4 3 2 1 0
+ *     F F F F B B B B - f f f f b b b b
+ *   Valores:
+ *     ffff foreground color (0-15)
+ *     bbbb background color (0-15)
+ *     FFFF foreground blink color (0-15)
+ *     BBBB background blink color (0-15)
+ *
+ * If FFFF and BBBB are 0 the blink mode is disabled.
  * 
  * Si se usan las constantes simbólicas definidas en conio.h para crear los 
  * atributos de texto usando textattr, ten en cuenta las siguientes 

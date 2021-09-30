@@ -1,11 +1,7 @@
 #include "msx_const.h"
 #include "conio.h"
+#include "conio_aux.h"
 
-#include <stdio.h>
-
-
-extern text_info _current_text_info;
-void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size);
 
 /**
  * Imprime el contenido en un rectángulo de texto en pantalla definido por los 

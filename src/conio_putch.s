@@ -9,8 +9,18 @@
 ; @return	Retorna el carácter mostrado, si tiene éxito; si ocurre un error, 
 ; 			entonces retorna EOF.
 
+.globl __setBlinkBit
+
 ;uint8_t putch(uint8_t c) __z88dk_fastcall;
 _putch::
+    ld a, l
+    cp #0x0a ;\r
+    jr z, .jumpPutch
+
+    push hl
+    call __setBlinkBit
+    pop  hl
+.jumpPutch:
     ld e,l
     
     ld c,#0x02  ;CONOUT
@@ -28,8 +38,10 @@ _putchar::
     push de
     push af
 
+;TODO blink
+
     ld a,e
-    cp #0x0a
+    cp #0x0a ;\r
     
     ld c,#0x02  ;CONOUT
     jp nz,.jumpPutchar

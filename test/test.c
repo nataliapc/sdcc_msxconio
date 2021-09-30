@@ -3,6 +3,7 @@
 #include "heap.h"
 #include <stdio.h>
 
+extern text_info _current_text_info;	// Struct with current text mode info.
 
 
 int main(char **argv, int argc)
@@ -15,7 +16,7 @@ int main(char **argv, int argc)
 	clreol();
 	cputs("## clreol()\r\n");
 	cputs("## cputs()\r\n");
-	printf("## inport(0x18) = 0x%02X\n", inportb(0x18));
+	printf("## inport(0xc0) = 0x%02X\n", inportb(0xc0));
 	printf("## getch() = '%c'\n", getch());
 	printf("## getche() = '%c'\n", getche());
 
@@ -46,23 +47,30 @@ int main(char **argv, int argc)
 	while (!kbhit());
 	getch();
 
-	textcolor(BLACK);
-	cputs("## textcolor(BLACK)\r\n");
-	getch();
-
-	textbackground(WHITE);
-	cputs("## textbackground(WHITE)\r\n");
-	getch();
-
-	textattr(0xf1);
-	cputs("## textattr(0xf1)\r\n");
-	getch();
-
 	char *buf = malloc(40*24);
 	gettext(1, 1, 40, 24, buf);
 	puttext(41, 1, 80, 24, buf);
 	free(40*24);
 
+	printf("attribute: 0x%04x\n", _current_text_info.attribute);
+
+	textcolor(BLACK);
+	cputs("## textcolor(BLACK)\r\n");
+	textattr(_current_text_info.attribute);
+	getch();
+
+	textbackground(WHITE);
+	cputs("## textbackground(WHITE)\r\n");
+	textattr(_current_text_info.attribute);
+	getch();
+
+	textattr(0x1af1);
+	cputs("## textattr(0x1af1)\r\n");
+	textattr(_current_text_info.attribute);
+	printf(" hola mundo ");
+	getch();
+
+	textattr(_current_text_info.normattr);
 	return 0;
 }
 

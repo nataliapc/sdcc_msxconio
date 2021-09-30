@@ -1,8 +1,6 @@
 #include "msx_const.h"
 #include "conio.h"
-
-
-text_info _current_text_info;
+#include "conio_aux.h"
 
 
 /**

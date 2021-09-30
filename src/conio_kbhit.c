@@ -3,7 +3,6 @@
 
 
 /**
- * TODO kbhit
  * Revisa si una tecla pulsada está disponible. Cualesquier pulsadas 
  * disponibles pueden ser recogidas con las funciones getch o getche.
  * 

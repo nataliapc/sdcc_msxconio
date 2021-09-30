@@ -1,7 +1,6 @@
 #include "msx_const.h"
 #include "conio.h"
-
-void _applyColors() __naked;
+#include "conio_aux.h"
 
 
 /**
@@ -16,12 +15,12 @@ void _applyColors() __naked;
  * 
  * Existen varias constantes simbólicas de colores para usar.
  */
-void textbackground(uint8_t color) __naked __z88dk_fastcall
+void textbackground(uint8_t color) __z88dk_fastcall
 {
-	__asm
-		ld a, l				// Get 'color' in A
-		ld (#BAKCLR),a		// Change BackColor in System Area
+	ADDR_POINTER_BYTE(BAKCLR) = color;
 
-		jp __applyColors	// Apply color changes
-	__endasm;
+	_current_text_info.attribute &= 0xf0;
+	_current_text_info.attribute |= color;
+
+	_applyColors();
 }

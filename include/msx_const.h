@@ -36,6 +36,7 @@ __sfr __at (0x99) IO_VDP2;
 #define WRTVDP	0x047		// Write data in the VDP-register [Input: B-Data to write | C-Register] [Changes: AF,BC]
 #define SETRD	0x050		// Sets VRAM address to read [Input: HL-VRAM address (00000h~03FFFh)][Changes: AF]
 #define SETWRT	0x053		// Sets VRAM address to write [Input: HL-VRAM address (00000h~03FFFh)][Changes: AF]
+#define FILVRM	0x056		// Fill VRAM with value [Input: A-Data byte|BC-Length|HL-VRAM address][Changes: AF,BC]
 #define LDIRMV	0x059		// Block transfer to memory from VRAM [Input: BC-Length|DE-Start memory address|HL-VRAM address][Changes: ALL]
 #define LDIRVM	0x05c		// Block transfer to VRAM from memory [Input: BC-Length|DE-VRAM address|HL-Start memory address][Changes: ALL]
 #define CHGCLR	0x062		// Changes the screen colors [Input: Foreground color in FORCLR | Background color in BAKCLR | Border color in BDRCLR]
@@ -71,6 +72,27 @@ __sfr __at (0x99) IO_VDP2;
 
 
 // ========================================================
+// MSX-DOS Nextor 2.1 BIOS
+// https://github.com/Konamiman/Nextor/blob/v2.1/docs/Nextor%202.1%20Programmers%20Reference.md#3-new-function-calls
+//
+#define FOUT    0x71		// Turn On/Off the fast STROUT mode. When enabled, the _STROUT and _ZSTROUT functions will work faster.
+#define ZSTROUT 0x72		// Prints on the screen the string pointed by DE, the string must be terminated with a zero character.
+#define RDDRV   0x73		// Reads sectors directly from a drive (no filesystem dependent)
+#define WRDRV   0x74		// Writes sectors directly from a drive (no filesystem dependent)
+#define RALLOC  0x75
+#define DSPACE  0x76		// Get drive space information
+#define LOCK    0x77		// Lock/unlock a drive, or get lock state for a drive
+#define GDRVR   0x78		// Get information about a device driver
+#define GDLI    0x79		// Get information about a drive letter
+#define GPART   0x7A		// Get information about a device partition
+#define CDRVR   0x7B		// Call a routine in a device driver
+#define MAPDRV  0x7C		// Map a drive letter to a driver and device
+#define Z80MODE 0x7D		// Enable or disable the Z80 access mode for a driver
+#define GETCLUS 0x7E		// Get information for a cluster on a FAT drive
+
+
+
+// ========================================================
 // MSX/MSX2 system constants
 // http://map.grauw.nl/resources/msxsystemvars.php
 // https://www.msx.org/wiki/System_variables_and_work_area
@@ -89,6 +111,7 @@ __sfr __at (0x99) IO_VDP2;
 #define CSRSW		0xfca9	// (BYTE) Cursor display switch (0:hidden | 1:visible)
 #define CSTYLE		0xfcaa	// (BYTE) Cursor style (0:full cursor | other:halve cursor)
 #define EXPTBL		0xfcc1	// (BYTE) BIOS slot
+#define RG9SAV		0xffe8	// (BYTE) Mirror of VDP register 9 (Basic: VDP(10), note: +1)
 
 
 // ========================================================

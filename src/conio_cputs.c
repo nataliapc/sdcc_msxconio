@@ -14,6 +14,21 @@
  * 
  * @return	Retorna el último carácter mostrado en pantalla.
  */
+#ifdef NEXTOR
+
+uint8_t cputs(const uint8_t *str) __naked __z88dk_fastcall
+{
+	__asm
+		ex de, hl
+	    ld c,#ZSTROUT
+	    DOSCALL
+		ld l,a
+		ret
+	__endasm;
+}
+
+#else
+
 uint8_t cputs(const uint8_t *str) __z88dk_fastcall
 {
 	uint8_t ret = 0;
@@ -21,5 +36,8 @@ uint8_t cputs(const uint8_t *str) __z88dk_fastcall
 		ret = putch(*str);
 		str++;
 	}
+	//TODO blink
 	return ret;
 }
+
+#endif //NEXTOR
