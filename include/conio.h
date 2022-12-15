@@ -376,7 +376,7 @@ uint8_t putch(uint8_t c) __z88dk_fastcall;
  *
  * @return	Retorna el número de caracteres mostrados en pantalla.
  */
-//int cprintf(const char *formato, ...);
+int cprintf(const char *formato, ...);
 
 /**
  * NOTE cputs
