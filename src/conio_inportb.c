@@ -1,18 +1,14 @@
-#include "msx_const.h"
 #include "conio.h"
 
 
 /**
- * Lee 1 byte desde el puerto indicado por el argumento id_puerto.
+ * Reads 1 byte from the port indicated by the id_puerto argument.
  */
-uint8_t inportb(uint8_t port) __naked __z88dk_fastcall
+uint8_t inportb(uint8_t port) __naked __sdcccall(1)
 {
 	__asm
-		ld c,l
-
+		ld c,a			; A = Param port
 		in a,(c)
-
-		ld l,a
-		ret
+		ret				; Returns A
 	__endasm;
 }

@@ -3,19 +3,17 @@
 
 
 /**
- * TODO getche
- * Lee un solo carácter directamente desde el teclado, mostrando tal carácter 
- * en pantalla, directamente a vídeo.
+ * Reads a single character directly from the keyboard, displaying such character
+ * on the screen, directly to video.
  *
- * @return	La función getche retorna el carácter leído del teclado.
+ * @return	The getche function returns the character read from the keyboard.
  */
-int getche() __naked
+int getche() __naked __z88dk_fastcall
 {
 	__asm
 		ld c,#CONIN
 		DOSCALL
-		ld h, #0x00
-
+		ld h, #0			; Returns HL
 		ret
 	__endasm;
 }

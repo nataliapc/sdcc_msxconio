@@ -1,11 +1,10 @@
-#include "msx_const.h"
 #include "conio.h"
 
 
 /**
- * Esta función despeja todos los caracteres desde la posición del cursor 
- * hasta el final de la línea dentro de la ventana de texto actual, sin mover 
- * la posición del cursor.
+ * This function clears all characters from the cursor position
+ * to the end of the line within the current text window, without moving
+ * the cursor position.
  */
 void clreol()
 {

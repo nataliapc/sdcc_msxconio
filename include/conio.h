@@ -1,9 +1,12 @@
 /**
  * ============================================================================
- *  CONIO Library port for MSX2 (SCREEN 0)
- *  https://web.archive.org/web/20090225093706/http://c.conclase.net/Borland/funcion.php?fun=inport
+ *  CONIO Library port for MSX2 (SCREEN 0) [2024-07-15]
+ *  Borland (mostly) compatibility
+ *  https://web.archive.org/web/20090225093706/http://c.conclase.net/Borland/funcion.php?fun=cgets
+ *  https://conclase.net/c/borland/conio
  * ============================================================================
  */
+#pragma once
 #ifndef  __CONIO_H__
 #define  __CONIO_H__
 
@@ -26,9 +29,10 @@
  * Constants for {@link gettextinfo}
  */
 enum TextModes {
-	LASTMODE = -1,	// Selecciona el modo anterior
-	BW40 = 0,		// Blanco y negro 40 columnas
-	BW80 = 2		// Blanco y negro 80 columnas
+	LASTMODE = -1,	// Selects the previous mode
+	BW40 = 0,		// Black and white 40 columns
+	BW80 = 2,		// Black and white 80 columns
+	_ORIGMODE = 65	// Original mode at the beginning of the program
 };
 
 /**
@@ -57,74 +61,118 @@ enum Color {
  * Struct for {@link gettextinfo}
  */
 typedef struct {
-	uint8_t winleft;        // Coordenada izquierda de la ventana
-	uint8_t wintop;         // Coordenada superior de la ventana
-	uint8_t winright;       // Coordenada derecha de la ventana
-	uint8_t winbottom;      // Coordenada inferior de la ventana
-	uint16_t attribute;     // Current text attributes.
-	uint16_t normattr;      // Attributes before textmode() was called.
-	uint8_t currmode;       // Modo en Uso: BW40, BW80, C40, C80, ó C4350
-	uint8_t screenheight;   // Altura de la pantalla de texto
-	uint8_t screenwidth;    // Anchura de la pantalla de texto
-	uint8_t curx;           // Coordenada X de la ventana en uso
-	uint8_t cury;           // Coordenada Y de la ventana en uso
+	uint8_t winleft;		// [0] Left coordinate of the window
+	uint8_t wintop;			// [1] Top coordinate of the window
+	uint8_t winright;		// [2] Right coordinate of the window
+	uint8_t winbottom;		// [3] Bottom coordinate of the window
+	uint16_t attribute;		// [4] Current text attributes. See textattr()
+	uint16_t normattr;		// [6] Attributes before textmode() was called.
+	uint8_t currmode;		// [8] Mode in use: BW40, BW80, C40, C80, or C4350
+	uint8_t screenheight;	// [9] Height of the text screen
+	uint8_t screenwidth;	// [10] Width of the text screen
+	uint8_t curx;			// [11] X coordinate of the current window
+	uint8_t cury;			// [12] Y coordinate of the current window
 	//Only MSX
-	uint8_t vramCharMap;	// Address at VRAM for chars(tiles) map
+	uint16_t vramCharMap;	// [13] Address at VRAM for chars(tiles) map
 } text_info;
 
+/**
+ * Characters to create graphical frames (frameChars array)
+ */
+#define FRAME_UP_LEFT		0
+#define FRAME_UP_RIGHT		1
+#define FRAME_DOWN_LEFT		2
+#define FRAME_DOWN_RIGHT	3
+#define FRAME_HORIZ_UP		4
+#define FRAME_HORIZ_DOWN	5
+#define FRAME_VERT_LEFT		6
+#define FRAME_VERT_RIGHT	7
+#define FRAME_HORIZONTAL	8
+#define FRAME_VERTICAL		9
+#define FRAME_FILL			10
+
+/**
+ * MSX character codes and compatible sentences VT-52
+ * https://www.msx.org/wiki/MSX_Characters_and_Control_Codes
+ */
+#ifndef __VT_KEY_CODES__
+#define __VT_KEY_CODES__
+#define  VT_BEEP		"\x07"		// A beep sound
+#define  VT_UP			"\x1E"		//27,"A"	; Cursor up
+#define  VT_DOWN		"\x1F"		//27,"B"	; Cursor down
+#define  VT_RIGHT		"\x1C"		//27,"C"	; Cursor right
+#define  VT_LEFT		"\x1D"		//27,"D"	; Cursor left
+#define  VT_CLRSCR		"\x0C"		//27,"E"	; Clear screen:	Clears the screen and moves the cursor to home
+#define  VT_HOME		"\x0B"		//27,"H"	; Cursor home:	Move cursor to the upper left corner.
+#define  VT_CLREOS		"\x1B""J"	// Clear to end of screen:	Clear screen from cursor onwards.
+#define  VT_CLREOL		"\x1B""K"	// Clear to end of line:	Deletes the line to the right of the cursor.
+#define  VT_INSLINE		"\x1B""L"	// Insert line:	Insert a line.
+#define  VT_DELLINE		"\x1B""M"	// Delete line:	Remove line.
+#define  VT_CLLINE		"\x1B""l"	// Deletes the full line at the cursor
+#define  VT_GOTOXY		"\x1B""Y"	// Set cursor position [rc]:	Move cursor to position [r+32]ow,[c+32]olumn encoded as single characters.
+#define  VT_CURFULL		"\x1B""x4"	// Cursor to full size
+#define  VT_CURHIDE		"\x1B""x5"	// Removes the cursor
+#define  VT_CURHALF		"\x1B""y4"	// Cursor to half size
+#define  VT_CURSHOW		"\x1B""y5"	// Shows the cursor
+
+#define  KEY_TAB		 9
+#define  KEY_UP			30
+#define  KEY_DOWN		31
+#define  KEY_RIGHT		28
+#define  KEY_LEFT		29
+#define  KEY_ENTER		13
+#endif	//__VT_KEY_CODES__
 
 
 // ANCHOR =====================================================================
 // Screen functions
 
 /**
- * NOTE gettextinfo
- * Obtiene la información de vídeo del modo texto. Esta información es guardada
- * en una estructura apuntada por el argumento *ti. La estructura text_info se 
- * define segun {@link text_info}
+ * gettextinfo
+ * Gets the video information in text mode. This information is stored
+ * in a structure pointed to by the *ti argument. The text_info structure
+ * is defined according to {@link text_info}
  */
 void gettextinfo(text_info *ti);
 
 /**
- * NOTE textmode
- * Esta función selecciona un modo de texto especificado por el argumento modo.
- * Este argumento puede ser una constante simbólica del tipo de enumeración 
- * text_modes (en conio.h).
+ * textmode
+ * This function selects a text mode specified by the mode argument.
+ * This argument can be a symbolic constant of the text_modes enumeration type
+ * (in conio.h).
  * 
- * Cuando se llama a la función textmode, la ventana en uso es reiniciada a la 
- * pantalla completa, y los atributos de texto en uso son reiniciados a normal,
- * correspondiendo a una llamada a normvideo. Especificando LASTMODE a textmode
- * causa el modo de texto más recientemente seleccionado a ser seleccionado de 
- * nuevo.
+ * When the textmode function is called, the current window is reset to
+ * full screen, and the text attributes in use are reset to normal,
+ * corresponding to a call to normvideo. Specifying LASTMODE to textmode
+ * causes the most recently selected text mode to be selected again.
  * 
- * La función textmode debería usarse solamente cuando la ventana o pantalla es
- * en modo de texto (supuestamente para cambiar a un modo de texto diferente). 
- * Este es el único contexto donde se usa la función textmode. Cuando la 
- * pantalla está en modo gráfico, usa la función restorecrtmode en vez de 
- * salirse temporalmente a modo de texto.
+ * The textmode function should only be used when the window or screen is
+ * in text mode (supposedly to change to a different text mode).
+ * This is the only context where the textmode function is used. When the
+ * screen is in graphics mode, use the restorecrtmode function instead of
+ * temporarily exiting to text mode.
  * 
- * Existen varias constantes simbólicas para indicar los modos de texto.
+ * There are several symbolic constants to indicate text modes.
  */
-void textmode(uint8_t mode) __z88dk_fastcall;
+void textmode(int8_t mode) __z88dk_fastcall;
 
 /**
- * NOTE setcursortype
- * Selecciona la apriencia del cursor entre tres tipos. El argumento 
- * tipo_cursor indica el tipo de cursor a seleccionar según éstos:
- *     NOCURSOR     Desactiva el cursor
- *     NORMALCURSOR Cursor normal: el carácter de subrayado
- *     SOLIDCURSOR  Cursor es un cuadrado relleno
+ * setcursortype
+ * Selects the cursor appearance among three types. The cursor_type argument
+ * indicates the type of cursor to select according to these:
+ *     NOCURSOR     Disables the cursor
+ *     NORMALCURSOR Normal cursor: the underscore character
+ *     SOLIDCURSOR  Cursor is a filled square
  */
 void setcursortype(uint8_t cursor_type) __z88dk_fastcall;
 
 /**
  * TODO highvideo
- * Selecciona los caracteres con una mayor intensidad mediante activando el 
- * bit de la mayor intensidad del color de primer plano en uso. La función 
- * highvideo no afecta a ninguno de los caracteres actualmente en pantalla, 
- * pero sí afecta aquéllas mostradas por funciones que usan el vídeo 
- * directamente para la salida en modo texto después de llamar a la función 
- * highvideo.
+ * Selects characters with higher intensity by activating the
+ * high intensity bit of the current foreground color. The highvideo function
+ * does not affect any of the characters currently on screen,
+ * but it does affect those displayed by functions that use video
+ * directly for text output after calling the highvideo function.
  *
  * Character attribute (Blink)     0800-08EF (090D)
  */
@@ -132,91 +180,85 @@ void setcursortype(uint8_t cursor_type) __z88dk_fastcall;
 
 /**
  * TODO lowvideo
- * Selecciona los caracteres con una menor intensidad mediante activando el 
- * bit de la menor intensidad del color de primer plano en uso. La función 
- * lowvideo no afecta a ninguno de los caracteres actualmente en pantalla, 
- * pero sí afecta aquéllas mostradas por funciones que usan el vídeo 
- * directamente para la salida en modo texto después de llamar a la función 
- * lowvideo.
+ * Selects characters with lower intensity by activating the
+ * low intensity bit of the current foreground color. The lowvideo function
+ * does not affect any of the characters currently on screen,
+ * but it does affect those displayed by functions that use video
+ * directly for text output after calling the lowvideo function.
  */
 //void lowvideo();
 
 /**
  * TODO normvideo
- * Selecciona los caracteres con una intensidad normal mediante seleccionado 
- * del atributo del texto (primer plano y de fondo) al valor que tenía 
- * anteriormente al comienzo del programa. La función normvideo no afecta 
- * a ninguno de los caracteres actualmente en pantalla, pero sí afecta 
- * aquéllas mostradas por funciones que usan el vídeo directamente para la 
- * salida en modo texto después de llamar a la función normvideo.
+ * Selects characters with normal intensity by setting
+ * the text attribute (foreground and background) to the value it had
+ * previously at the beginning of the program. The normvideo function
+ * does not affect any of the characters currently on screen,
+ * but it does affect those displayed by functions that use video
+ * directly for text output after calling the normvideo function.
  */
 //void normvideo();
 
 /**
- * NOTE textcolor
- * Esta función selecciona el color de texto especificado por el argumento 
- * color. Esta función solamente funciona con aquellas funciones que envían 
- * datos de salida en modo texto directamente a la pantalla. El argumento 
- * color es un número entero entre 0 y 15; también se pueden usar constantes 
- * simbólicas definidas en conio.h en lugar de enteros. La función textcolor 
- * no afecta a ninguno de los caracteres actualmente en pantalla, pero sí 
- * afecta aquéllas mostradas por funciones que usan el vídeo directamente para 
- * la salida en modo texto después de llamar a la función textcolor.
+ * textcolor
+ * This function selects the text color specified by the color argument.
+ * This function only works with functions that send output data in text mode
+ * directly to the screen. The color argument is an integer between 0 and 15;
+ * symbolic constants defined in conio.h can also be used instead of integers.
+ * The textcolor function does not affect any of the characters currently on screen,
+ * but it does affect those displayed by functions that use video directly for
+ * text output after calling the textcolor function.
  *
- * Existen varias constantes simbólicas de colores para usar.
+ * There are several symbolic color constants to use.
  */
 void textcolor(uint8_t color) __z88dk_fastcall;
 
 /**
- * NOTE textbackground
- * Esta función selecciona el color de fondo especificado por el argumento 
- * color. Esta función solamente funciona con aquellas funciones que envían 
- * datos de salida en modo texto directamente a la pantalla. El argumento 
- * color es un número entero entre 0 y 15; también se pueden usar constantes 
- * simbólicas definidas en conio.h en lugar de enteros. La función textattr no 
- * afecta cualesquiera de los caracteres actualmente en pantalla, pero sí 
- * afecta aquéllas mostradas por funciones que usan el vídeo directamente para 
- * la salida en modo texto después de llamar a la función textattr.
+ * textbackground
+ * This function selects the background color specified by the color argument.
+ * This function only works with functions that send output data in text mode
+ * directly to the screen. The color argument is an integer between 0 and 15;
+ * symbolic constants defined in conio.h can also be used instead of integers.
+ * The textattr function does not affect any of the characters currently on screen,
+ * but it does affect those displayed by functions that use video directly for
+ * text output after calling the textattr function.
  * 
- * Existen varias constantes simbólicas de colores para usar.
+ * There are several symbolic color constants to use.
  */
 void textbackground(uint8_t color) __z88dk_fastcall;
 
 /**
- * TODO textblink
- * Activa o desactiva el parpadeo en el texto a escribir a partir de esta
- * llamada.
- * ==0 - Para desactivarlo
- * !=0 - Para activarlo
+ * textblink
+ * Enables or disables text blinking in a given region.
  */
-//void textblink(uint8_t enabled) __z88dk_fastcall;
+void textblink(uint8_t x, uint8_t y, uint8_t length, bool enabled);
 
 /**
- * NOTE textattr
- * Esta función asigna los colores de primer plano y de fondo en una sola 
- * llamada. (Normalmente, se asignan estos atributos mediante las funciones 
- * a textcolor y textbackground). La función textattr no afecta cualesquiera 
- * de los caracteres actualmente en pantalla, pero sí afecta aquéllas 
- * mostradas por funciones que usan el vídeo directamente para la salida en 
- * modo texto después de llamar a la función textattr.
+ * textattr
+ * This function assigns foreground and background colors in a single call.
+ * (Normally, these attributes are assigned using the textcolor and
+ * textbackground functions). The textattr function does not affect any
+ * of the characters currently on screen, but it does affect those
+ * displayed by functions that use video directly for text output
+ * after calling the textattr function.
  * 
- * La información de los colores está codificado en el argumento atributo según
- * este diagrama:
+ * The color information is encoded in the attribute argument according to
+ * this diagram:
  * 
- * Estandar
+ * Standard
  *   Bits	
  *     7 6 5 4 3 2 1 0
  *     B f f f p p p p
- *   En el argumento atributo de 8 bits:
- *     pppp es el color de primer plano de 4 bits (0-15).
- *     fff es el color de fondo de 3 bits (0-7).
- *     B es el bit de encendido de parpadeo.
+ *   In the 8-bit attribute argument:
+ *     pppp is the 4-bit foreground color (0-15).
+ *     fff is the 3-bit background color (0-7).
+ *     B is the blink enable bit.
  *
  * MSX
- *   Attributo de 16 bits:
+ *   16-bit Attribute:
  *     F E D C B A 9 8 - 7 6 5 4 3 2 1 0
  *     F F F F B B B B - f f f f b b b b
- *   Valores:
+ *   Values:
  *     ffff foreground color (0-15)
  *     bbbb background color (0-15)
  *     FFFF foreground blink color (0-15)
@@ -224,14 +266,15 @@ void textbackground(uint8_t color) __z88dk_fastcall;
  *
  * If FFFF and BBBB are 0 the blink mode is disabled.
  * 
- * Si se usan las constantes simbólicas definidas en conio.h para crear los 
- * atributos de texto usando textattr, ten en cuenta las siguientes 
- * limitaciones para el color de fondo seleccionado:
+ * PC
+ * If using the symbolic constants defined in conio.h to create text
+ * attributes using textattr, keep in mind the following limitations
+ * for the selected background color:
  * 
- * Sólo se pueden elegir uno de los primeros ocho colores para el fondo.
- * Deberás mudar el color de fondo seleccionado 4 bits a la izquierda para que 
- * estén colocados en las posiciones correctas de los bits.
- * Existen varias constantes simbólicas de colores para usar.
+ * Only one of the first eight colors can be chosen for the background.
+ * You must shift the selected background color 4 bits to the left so that
+ * they are placed in the correct bit positions.
+ * There are several symbolic color constants to use.
  */
 void textattr(uint16_t attribute) __z88dk_fastcall;
 
@@ -239,191 +282,237 @@ void textattr(uint16_t attribute) __z88dk_fastcall;
 // Screen positions & areas
 
 /**
- * TODO window
- * Define una ventana de texto en pantalla especificado por los argumentos 
- * izquierda y superior, que describen la esquina superior izquierda y por los 
- * argumentos derecha e inferior, que describen la esquina inferior derecha. 
- * El tamaño mínimo de la ventana de texto es una columna por una fila. La 
- * ventana por defecto es la pantalla completa con la esquina superior 
- * izquierda siendo (1,1) y la inferior derecha siendo (C,F); donde C es menor 
- * al número columnas y F menor al número filas según el modo de texto en uso.
- * La llamada a la función window será ignorada si alguno de los argumentos no 
- * son válidos.
+ * window
+ * Defines a text window on the screen specified by the left and top arguments,
+ * which describe the upper left corner, and by the right and bottom arguments,
+ * which describe the lower right corner. The minimum size of the text window
+ * is one column by one row. The default window is the full screen with the
+ * upper left corner being (1,1) and the lower right being (C,R); where C is
+ * less than the number of columns and R less than the number of rows according
+ * to the text mode in use. The call to the window function will be ignored if
+ * any of the arguments are invalid.
  */
-//void window(int izquierda, int superior, int derecha, int inferior);
+void window(int left, int top, int right, int bottom);
 
 /**
- * NOTE gotoxy
- * Mueve el cursor de la ventana de texto a la posición según las coordenadas 
- * especificadas por los argumentos x e y. Si las coordenadas no son válidas 
- * entonces la llamda a la función gotoxy es ignorada.
+ * gotoxy
+ * Moves the cursor of the text window to the position specified by the
+ * coordinates x and y. If the coordinates are not valid, then the call to
+ * the gotoxy function is ignored.
  */
 void gotoxy(uint8_t x, uint8_t y);
 
 /**
- * NOTE wherex
- * Obtiene la coordenada x de la posición del cursor actual (dentro de la 
- * ventana de texto en uso).
+ * wherex
+ * Gets the x coordinate of the current cursor position (within the
+ * current text window).
  * 
- * @return	La función wherex retorna un número entero entre 1 y el número
- * 			de columnas en el modo de texto en uso.
+ * @return	The wherex function returns an integer between 1 and the number
+ * 			of columns in the current text mode.
  */
-uint8_t wherex();
+uint8_t wherex() __sdcccall(1);
 
 /**
- * NOTE wherey
- * Obtiene la coordenada y de la posición del cursor actual (dentro de la 
- * ventana de texto en uso).
+ * wherey
+ * Gets the y coordinate of the current cursor position (within the
+ * current text window).
  * 
- * @return	La función wherey retorna un número entero entre 1 y el número
- * 			de filas en el modo de texto en uso.
+ * @return	The wherey function returns an integer between 1 and the number
+ * 			of rows in the current text mode.
  */
-uint8_t wherey();
+uint8_t wherey() __sdcccall(1);
 
 /**
- * NOTE gettext
- * Guarda el contenido en un rectángulo de texto en pantalla definido por los 
- * argumentos izquierda y superior, que describen la esquina superior izquierda
- * y por los argumentos derecha e inferior, que describen la esquina inferior 
- * derecha, en el área de memoria apuntada por el argumento destino. Todas las 
- * coordenadas son coordenadas absolutas de pantalla; no son relativas a la 
- * ventana. La esquina superior izquierda es (1,1). La función gettext lee el 
- * contenido en este rectángulo en memoria secuencialmente de izquierda a 
- * derecha y de arriba a abajo. Cada posición en pantalla necesita 2 bytes de 
- * memoria. El primer byte es el carácter en la celda y el segundo es el 
- * atributo de vídeo de la celda. El espacio requerido para un rectángulo b 
- * columnas anchas y h filas altas está definida como:
+ * gettext
+ * Saves the content in a rectangle of text on the screen defined by the
+ * left and top arguments, which describe the upper left corner,
+ * and by the right and bottom arguments, which describe the lower right
+ * corner, in the memory area pointed to by the destination argument. All
+ * coordinates are absolute screen coordinates; they are not relative to
+ * the window. The upper left corner is (1,1). The gettext function reads
+ * the content in this rectangle into memory sequentially from left to
+ * right and from top to bottom. Each screen position requires 2 bytes of
+ * memory. The first byte is the character in the cell and the second is
+ * the video attribute of the cell. The space required for a rectangle w
+ * columns wide and h rows high is defined as:
  *
- * bytes = (h filas) x (w anchas) x 2.
+ * bytes = (h rows) x (w columns) x 2.
  * 
- * @return	Retorna 1 si la operación tiene éxito. Si hay un error, como es el 
- *			caso de acceder fuera de la pantalla, retorna el valor de 0.
+ * @return	Returns 1 if the operation is successful. If there is an error,
+ *			such as accessing outside the screen, it returns a value of 0.
  */
 uint8_t gettext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *target);
 
 /**
- * NOTE puttext
- * Imprime el contenido en un rectángulo de texto en pantalla definido por los 
- * argumentos izquierda y superior, que describen la esquina superior 
- * izquierda y por los argumentos derecha e inferior, que describen la esquina 
- * inferior derecha, en el área de memoria apuntada por el argumento origen. 
- * Todas las coordenadas son coordenadas absolutas de pantalla; no son 
- * relativas a la ventana. La esquina superior izquierda es (1,1). La función 
- * puttext coloca el contenido de este rectángulo en memoria secuencialmente 
- * de izquierda a derecha y de arriba a abajo. Cada posición en pantalla 
- * contiene 2 bytes de memoria. El primer byte es el carácter en la celda y el 
- * segundo es el atributo de vídeo de la celda. El espacio requerido para un 
- * rectángulo b columnas anchas y h filas altas está definida como:
+ * puttext
+ * Prints the content in a text rectangle on the screen defined by the
+ * arguments left and top, which describe the upper left corner,
+ * and by the arguments right and bottom, which describe the lower
+ * right corner, in the memory area pointed to by the source argument.
+ * All coordinates are absolute screen coordinates; they are not
+ * relative to the window. The upper left corner is (1,1). The puttext
+ * function places the content of this rectangle in memory sequentially
+ * from left to right and top to bottom. The space required for a
+ * rectangle b columns wide and h rows high is defined as:
  *
- * bytes = (h filas) x (w anchas) x 2.
+ * bytes = (h rows) x (w width)
  *
- * La función puttext usa la salida directa de vídeo.
+ * The puttext function uses direct video output.
  *
- * @return	La función puttext retorna un valor distinto a 0, si la operación 
- * 			tiene éxito. Si ocurre un error, como es el caso de acceder fuera 
- * 			de la pantalla, entonces retorna el valor de 0.
+ * @return	The puttext function returns a non-zero value if the operation
+ * 			is successful. If an error occurs, such as accessing outside
+ * 			the screen, it returns a value of 0.
  */
 uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *source);
 
 /**
- * TODO movetext
- * Copia el contenido en un rectángulo de texto en pantalla definido por los 
- * argumentos izquierda y superior, que describen la esquina superior izquierda
- * y por los argumentos derecha e inferior, que describen la esquina inferior 
- * derecha, a otro rectángulo de iguales dimensiones. La esquina superior 
- * izquierda del nuevo rectángulo está especificada por los argumentos 
- * destino_izquierda y destino_superior. Todas las coordenadas son coordenadas 
- * absolutas de pantalla; no son relativas a la ventana. Los rectángulos que 
- * ocupan el mismo área son mudados acordemente. La función movetext usa la 
- * salida de vídeo directamente.
+ * movetext
+ * Copies the content in a text rectangle on the screen defined by the
+ * arguments left and top, which describe the upper left corner,
+ * and by the arguments right and bottom, which describe the lower
+ * right corner, to another rectangle of equal dimensions. The upper left
+ * corner of the new rectangle is specified by the arguments
+ * dest_left and dest_top. All coordinates are absolute screen
+ * coordinates; they are not relative to the window. Rectangles that
+ * occupy the same area are moved accordingly. The movetext function
+ * uses direct video output.
  * 
- * @return	La función movetext retorna un valor distinto a 0, si la operación 
- * 			tiene éxito. Si ocurre un error, como es el caso de acceder fuera 
- * 			de la pantalla, entonces retorna el valor de 0.
+ * @return	The movetext function returns a non-zero value if the operation
+ * 			is successful. If an error occurs, such as accessing outside
+ * 			the screen, it returns a value of 0.
  */
-//uint8_t movetext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, uint8_t dst_left, uint8_t dst_top);
+uint8_t movetext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, uint8_t dst_left, uint8_t dst_top);
+
+/**
+ * putlinexy
+ * Prints the content of a buffer directly on the screen at the
+ * indicated position.
+ */
+void putlinexy(uint8_t x, uint8_t y, uint8_t length, void *source);
+
+/**
+ * chline
+ * The function outputs a horizontal line with the given length starting at the 
+ * current cursor position.
+ * The character used to draw the horizontal line is system dependent. If available, 
+ * a line drawing character is used. Drawing a line that is partially off screen 
+ * leads to undefined behaviour.
+ */
+void chline(uint8_t length);
+
+/**
+ * chlinexy
+ * The function outputs a horizontal line with the given length starting at a given 
+ * position.
+ * The character used to draw the horizontal line is system dependent. If available, 
+ * a line drawing character is used. Drawing a line that is partially off screen 
+ * leads to undefined behaviour.
+ */
+void chlinexy(unsigned char x, unsigned char y, unsigned char length);
+
+/**
+ * cvline
+ * The function outputs a vertical line with the given length starting at the 
+ * current cursor position.
+ * The character used to draw the vertical line is system dependent. If available, 
+ * a line drawing character is used. Drawing a line that is partially off screen 
+ * leads to undefined behaviour.
+ */
+void cvline(uint8_t length);
+
+/**
+ * chlinexy
+ * The function outputs a vertical line with the given length starting at a given 
+ * position.
+ * The character used to draw the vertical line is system dependent. If available, 
+ * a line drawing character is used. Drawing a line that is partially off screen 
+ * leads to undefined behaviour.
+ */
+void cvlinexy(unsigned char x, unsigned char y, unsigned char length);
+
+/**
+ * drawFrame
+ * The function draw a rectangled frame at a given position.
+ * The characters used to draw the frame is system dependent. Drawing a frame that 
+ * is partially off screen leads to undefined behaviour.
+ */
+void drawFrame(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom);
 
 
 // ANCHOR =====================================================================
 // Output to console functions
 
 /**
- * NOTE putch
- * Muestra un carácter, especificado por el argumento c, directamente a la 
- * ventana de texto en uso. La función putch usa el vídeo directamente para 
- * mostrar caracteres. Esto se realiza mediante una escritura directa a la 
- * memoria de la pantalla o mediante una llamada a la BIOS, dependiendo del 
- * valor de la variable global _directvideo. Esta función no convierte los 
- * caracteres de nueva línea (\n) en la pareja de caracteres de retorno de 
- * línea/nueva línea (\r\n).
+ * putch
+ * Displays a character, specified by the argument c, directly to the
+ * text window in use. The putch function uses video directly to
+ * display characters. This is done by direct writing to the
+ * screen memory or through a BIOS call, depending on the
+ * value of the global variable _directvideo. This function does not convert
+ * newline characters (\n) to the carriage return/line feed pair (\r\n).
  *
- * @return	Retorna el carácter mostrado, si tiene éxito; si ocurre un error, 
- * 			entonces retorna EOF.
+ * @return	Returns the displayed character if successful; if an error occurs,
+ * 			it returns EOF.
  */
-uint8_t putch(uint8_t c) __z88dk_fastcall;
+uint8_t putch(uint8_t c) __sdcccall(1);
+int putchar(int c) __sdcccall(1);
 
 /**
- * TODO cprintf
- * Muestra texto en pantalla según el formato descrito. Esta función es 
- * similar a la función printf, pero con la excepción de que la función 
- * cprintf no convertirá los caracteres de nueva línea (\n) en la pareja de 
- * caracteres de retorno de línea/nueva línea (\r\n). Los caracteres de 
- * tabulación (\t) no serán expandidos a espacios. La cadena de texto con 
- * formato será enviado directamente a la ventana de texto actual en la 
- * pantalla.
+ * cprintf
+ * Displays text on the screen according to the described format. This function is
+ * similar to the printf function, but with the exception that the
+ * cprintf function will not convert newline characters (\n) to the
+ * carriage return/line feed pair (\r\n). Tab characters (\t)
+ * will not be expanded to spaces. The formatted text string will be sent
+ * directly to the current text window on the screen.
  *
- * Esto se realiza mediante una escritura directa a la memoria de la pantalla.
+ * This is done by direct writing to the screen memory.
  *
- * @return	Retorna el número de caracteres mostrados en pantalla.
+ * @return	Returns the number of characters written.
  */
-int cprintf(const char *formato, ...);
+int cprintf(const char *format, ...);
 
 /**
- * NOTE cputs
- * Muestra la cadena, que finaliza con el carácter nulo, apuntada por el 
- * argumento *cadena en la ventana de texto actual. Esta función es similar a 
- * la función puts, pero con dos excepciones: la función cputs no convertirá 
- * los caracteres de nueva línea (\n) en la pareja de caracteres de retorno de 
- * línea/nueva línea (\r\n) tampoco añadirá el carácter de nueva línea al 
- * final del texto.
+ * cputs
+ * Displays the null-terminated string pointed to by the
+ * *string argument in the current text window. This function is similar to
+ * the puts function, but with two exceptions: the cputs function will not add
+ * the newline character at the end of the text.
  * 
- * Esto se realiza mediante una escritura directa a la memoria de la pantalla.
- * 
- * @return	Retorna el último carácter mostrado en pantalla.
+ * This is done by direct writing to the screen memory.
  */
-uint8_t cputs(const uint8_t *cadena) __z88dk_fastcall;
+void cputs(const char *string);
 
 /**
- * NOTE clrscr
- * Esta función despeja la ventana de texto actual y coloca el cursor en la 
- * esquina superior izquierda: posición (1,1).
+ * clrscr
+ * This function clears the current text window and places the cursor in the
+ * upper left corner: position (1,1).
  *
  * Initial screen position in original conio library is (1,1).
  */
 void clrscr();
 
 /**
- * NOTE clreol
- * Esta función despeja todos los caracteres desde la posición del cursor 
- * hasta el final de la línea dentro de la ventana de texto actual, sin mover 
- * la posición del cursor.
+ * clreol
+ * This function clears all characters from the cursor position
+ * to the end of the line within the current text window, without moving
+ * the cursor position.
  */
 void clreol();
 
 /**
- * NOTE insline
- * Inserta una línea vacía en la ventana de texto en la posición del cursor 
- * usando el color de fondo de texto en uso. Todas las líneas debajo de la 
- * vacía son mudadas una línea más abajo, y la línea inferior es mudada fuera 
- * de la ventana.
+ * insline
+ * Inserts an empty line in the text window at the cursor position
+ * using the current background text color. All lines below the
+ * empty one are moved down one line, and the bottom line is moved out
+ * of the window.
  */
 void insline();
 
 /**
- * NOTE delline
- * Borra la línea donde se encuentre el cursor y mueve todas las líneas 
- * inferiores a una línea anterior. La función delline funciona en la ventana 
- * de texto activa.
+ * delline
+ * Deletes the line where the cursor is located and moves all lower lines
+ * up one line. The delline function works in the active text window.
  */
 void delline();
 
@@ -432,94 +521,92 @@ void delline();
 // Input from keyboard functions
 
 /**
- * NOTE kbhit
- * Revisa si una tecla pulsada está disponible. Cualesquier pulsadas 
- * disponibles pueden ser recogidas con las funciones getch o getche.
+ * kbhit
+ * Checks if a key press is available. Any available key presses
+ * can be retrieved with the getch or getche functions.
  * 
- * @return	La función kbhit retorna 0 si no se ha registrado una pulsación 
- * 			de tecla; si hay una disponible, entonces el valor retornado es 
- * 			distinto a cero.
+ * @return	The kbhit function returns 0 if no key press has been registered;
+ * 			if one is available, then the returned value is non-zero.
  */
-int kbhit();
+bool kbhit();
 
 /**
- * NOTE getch
- * Lee un solo carácter directamente desde el teclado, sin mostrar tal 
- * carácter en pantalla.
+ * getch
+ * Reads a single character directly from the keyboard, without displaying
+ * the character on the screen.
  * 
- * @return	Retorna el carácter leído desde el teclado.
+ * @return	Returns the character read from the keyboard.
  */
-int getch();
+int getch() __z88dk_fastcall;
 
 /**
- * NOTE getche
- * Lee un solo carácter directamente desde el teclado, mostrando tal carácter 
- * en pantalla, directamente a vídeo.
+ * getche
+ * Reads a single character directly from the keyboard, displaying the character
+ * on the screen, directly to video.
  *
- * @return	La función getche retorna el carácter leído del teclado.
+ * @return	The getche function returns the character read from the keyboard.
  */
-int getche();
+int getche() __z88dk_fastcall;
 
 /**
  * TODO ungetch
- * Empuja el carácter especificado por el argumento c de vuelta a la consola, 
- * forzando el carácter empujado, c, a ser el siguiente carácter leído. La 
- * función ungetch no funciona si es llamada más de una vez antes de la 
- * siguiente lectura.
+ * Pushes the character specified by the argument c back to the console,
+ * forcing the pushed character, c, to be the next character read. The
+ * ungetch function does not work if it is called more than once before
+ * the next read.
  * 
- * @return	La función ungetch retorna el carácter empujado, si tiene éxito; 
- * 			si no, entonces retorna EOF.
+ * @return	The ungetch function returns the pushed character if successful;
+ * 			if not, it returns EOF.
  */
 //int ungetch(int c) __z88dk_fastcall;
 
 /**
  * TODO cgets
- * Esta función leerá una cadena de caracteres desde la consola, guardando la 
- * cadena (y su longitud) en el lugar apuntado por *cadena. La función cgets 
- * leerá caracteres hasta que encuentre una combinación de retorno de línea y 
- * nueva línea (CR/LF), o hasta que el número máximo de caracteres permitidos 
- * hayan sido leídos. Si se lee una combinación CR/LF, entonces es sustituido 
- * por un carácter nulo '\0' antes de ser guardado la cadena.
+ * This function will read a string of characters from the console, storing the
+ * string (and its length) in the location pointed to by *string. The cgets
+ * function will read characters until it finds a carriage return and line feed
+ * (CR/LF) combination, or until the maximum number of allowed characters
+ * have been read. If a CR/LF combination is read, it is replaced by a
+ * null character '\0' before the string is stored.
  * 
- * Antes de que la función cgets es llamada, asigna a cadena[0] la longitud 
- * máxima de la cadena a ser leída. Al retornar, cadena[1] es asignado el 
- * número de caracteres leídos. Los caracteres leídos comienzan a partir de 
- * cadena[2] (incluido) y termina con carácter nulo. Por esta razón, *cadena 
- * debe ser como mínimo cadena[0] más 2 bytes de longitud.
+ * Before the cgets function is called, assign to string[0] the maximum
+ * length of the string to be read. Upon return, string[1] is assigned the
+ * number of characters read. The characters read start from string[2]
+ * (inclusive) and end with a null character. For this reason, *string
+ * must be at least string[0] plus 2 bytes in length.
  * 
- * @return	Retorna la cadena de caracteres a partir de cadena[2], si tiene 
- * 			éxito.
+ * @return	Returns the string of characters starting from string[2], if
+ * 			successful.
  */
-//char *cgets(char *cadena) __z88dk_fastcall;
+//char *cgets(char *string) __z88dk_fastcall;
 
 /**
  * TODO getpass
- * Lee una contraseña desde la consola del sistema después de mostrar un 
- * mensaje, el cual es una cadena de caracteres (terminada en un carácter 
- * nulo) apuntada por el argumento message y desactivando la salida de texto.
+ * Reads a password from the system console after displaying a message,
+ * which is a string of characters (terminated by a null character) pointed
+ * to by the message argument and disabling text output.
  * 
- * @return	Retorna un puntero estático a la cadena de caracteres con el 
- * 			carácter nulo al final conteniendo la contraseña. Esta cadena 
- * 			contiene hasta ocho caracteres, sin contar el carácter nulo. Cada 
- * 			vez que la función getpass es llamada, la cadena de caracteres es 
- * 			sobrescrita.
+ * @return	Returns a static pointer to the null-terminated string of characters
+ * 			containing the password. This string contains up to eight characters,
+ * 			not counting the null character. Each time the getpass function is
+ * 			called, the character string is overwritten.
  */
 //char *getpass(const char *message) __z88dk_fastcall;
 
 /**
  * TODO cscanf
- * Recoge el texto y lo procesa según el formato dado por *formato. Esta 
- * función es similar a la función scanf., la diferencia está en que la 
- * función cscanf lee los datos desde la consola que son automáticamente 
- * mostrados.
+ * Collects text and processes it according to the format given by *format.
+ * This function is similar to the scanf function, the difference being that
+ * the cscanf function reads data from the console that is automatically
+ * displayed.
  * 
- * @return	Retorna el número de elementos entrados que hayan sido escaneados, 
- * 			convertidos, y guardados con éxito; el valor retornado no incluye 
- * 			elementos que no hayan sido guardados. Si no se han guardado 
- * 			elementos leídos, el valor de retorno es 0. Si cscanf intenta leer 
- * 			al final-de-fichero, el valor retornado es EOF.
+ * @return	Returns the number of input elements that have been scanned,
+ * 			converted, and successfully stored; the returned value does not
+ * 			include elements that have not been stored. If no elements have
+ * 			been read, the return value is 0. If cscanf attempts to read at
+ * 			end-of-file, the returned value is EOF.
  */
-//int cscanf(const char *formato, ...);
+//int cscanf(const char *format, ...);
 
 
 // ANCHOR =====================================================================
@@ -527,37 +614,37 @@ int getche();
 
 /**
  * TODO inport
- * Lee 1 byte de la parte baja de 1 palabra (word) desde el puerto de entrada 
- * indicado por el argumento id_puerto; lee el byte alto desde id_puerto+1. La 
- * función inport funciona de la misma manera que la instrucción 80x86 IN.
+ * Reads 1 byte from the low part of 1 word from the input port indicated
+ * by the id_port argument; reads the high byte from id_port+1. The inport
+ * function works in the same way as the 80x86 IN instruction.
  * 
- * @return	Retorna el valor leído de una palabra (word) de tamaño desde el 
- *			puerto apuntado por el argumento id_puerto e id_puerto+1.
+ * @return	Returns the value read of a word size from the port pointed to
+ *			by the id_port and id_port+1 arguments.
  */
-//int inport(int id_puerto) __z88dk_fastcall;
+//int inport(int id_port) __z88dk_fastcall;
 
 /**
  * TODO outport
- * Escribe el último byte de 1 palabra (word) al puerto de salida indicado por 
- * el argumento id_puerto; escribe el primer byte a id_puerto+1. La función 
- * outport funciona de la misma manera que la instrucción 80x86 OUT.
+ * Writes the last byte of 1 word to the output port indicated by the id_port
+ * argument; writes the first byte to id_port+1. The outport function works
+ * in the same way as the 80x86 OUT instruction.
  * 
- * @return	Retorna el valor escrito de una palabra (word) de tamaño al puerto 
- * 			apuntado por el argumento id_puerto e id_puerto+1.
+ * @return	Returns the value written of a word size to the port pointed to
+ * 			by the id_port and id_port+1 arguments.
  */
-//int outport(int id_puerto, int valor);
+//int outport(int id_port, int value);
 
 /**
- * NOTE inportb
- * Lee 1 byte desde el puerto indicado por el argumento id_puerto.
+ * inportb
+ * Reads 1 byte from the port indicated by the id_port argument.
  */
-uint8_t inportb(uint8_t port) __z88dk_fastcall;
+uint8_t inportb(uint8_t port) __sdcccall(1);
 
 /**
- * NOTE outportb
- * Escribe 1 byte al puerto de salida indicado por el argumento id_puerto.
+ * outportb
+ * Writes 1 byte to the output port indicated by the id_port argument.
  */
-void outportb(uint8_t port, uint8_t value);
+void outportb(uint8_t port, uint8_t value) __sdcccall(1);
 
 
 

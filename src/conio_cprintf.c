@@ -8,7 +8,7 @@ void _printf(const char *format, va_list va);
 
 /*
 	Simple cprintf implementation.
-	Supports %c %s %u %d %x %b
+	Supports %s %c %u %d %l %x %b
  */
 int cprintf(const char *format, ...)
 {

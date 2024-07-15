@@ -4,16 +4,16 @@
 
 
 /**
- * Esta función selecciona el color de texto especificado por el argumento 
- * color. Esta función solamente funciona con aquellas funciones que envían 
- * datos de salida en modo texto directamente a la pantalla. El argumento 
- * color es un número entero entre 0 y 15; también se pueden usar constantes 
- * simbólicas definidas en conio.h en lugar de enteros. La función textcolor 
- * no afecta a ninguno de los caracteres actualmente en pantalla, pero sí 
- * afecta aquéllas mostradas por funciones que usan el vídeo directamente para 
- * la salida en modo texto después de llamar a la función textcolor.
+ * This function selects the text color specified by the color argument.
+ * This function only works with those functions that send output data
+ * in text mode directly to the screen. The color argument is an integer
+ * between 0 and 15; symbolic constants defined in conio.h can also be
+ * used instead of integers. The textcolor function does not affect any
+ * of the characters currently on the screen, but it does affect those
+ * displayed by functions that use video directly for text mode output
+ * after calling the textcolor function.
  *
- * Existen varias constantes simbólicas de colores para usar.
+ * There are several symbolic color constants available for use.
  */
 void textcolor(uint8_t color) __z88dk_fastcall
 {

@@ -3,9 +3,9 @@
 
 
 /**
- * Mueve el cursor de la ventana de texto a la posición según las coordenadas 
- * especificadas por los argumentos x e y. Si las coordenadas no son válidas 
- * entonces la llamda a la función gotoxy es ignorada.
+ * Moves the text window cursor to the position specified by the x and y
+ * coordinates. If the coordinates are not valid, then the call to the
+ * gotoxy function is ignored.
  */
 void gotoxy(uint8_t x, uint8_t y)
 {

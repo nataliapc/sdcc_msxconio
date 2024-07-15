@@ -3,14 +3,14 @@
 
 
 /**
- * Revisa si una tecla pulsada está disponible. Cualesquier pulsadas 
- * disponibles pueden ser recogidas con las funciones getch o getche.
+ * Checks if a pressed key is available. Any available keystrokes
+ * can be retrieved with the getch or getche functions.
  * 
- * @return	La función kbhit retorna 0 si no se ha registrado una pulsación 
- * 			de tecla; si hay una disponible, entonces el valor retornado es 
- * 			distinto a cero.
+ * @return	The kbhit function returns 0 if no keystroke has been registered;
+ * 			if one is available, then the returned value is
+ * 			different from zero.
  */
-int kbhit()
+bool kbhit()
 {
-	return ADDR_POINTER_WORD(PUTPNT) - ADDR_POINTER_WORD(GETPNT);
+	return ADDR_POINTER_WORD(PUTPNT) != ADDR_POINTER_WORD(GETPNT);
 }

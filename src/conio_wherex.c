@@ -3,17 +3,16 @@
 
 
 /**
- * Obtiene la coordenada x de la posición del cursor actual (dentro de la 
- * ventana de texto en uso).
+ * Gets the x-coordinate of the current cursor position (within the
+ * active text window).
  * 
- * @return	La función wherex retorna un número entero entre 1 y el número 
- * 			de columnas en el modo de texto en uso.
+ * @return	The wherex function returns an integer between 1 and the number
+ * 			of columns in the current text mode.
  */
-uint8_t wherex() __naked
+uint8_t wherex() __naked __sdcccall(1)
 {
 	__asm
 		ld  a,(#CSRX)
-		ld  l,a
 		ret
 	__endasm;
 }

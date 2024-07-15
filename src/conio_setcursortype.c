@@ -3,11 +3,11 @@
 
 
 /**
- * Selecciona la apriencia del cursor entre tres tipos. El argumento 
- * tipo_cursor indica el tipo de cursor a seleccionar según éstos:
- *     NOCURSOR     Desactiva el cursor
- *     NORMALCURSOR Cursor normal: el carácter de subrayado
- *     SOLIDCURSOR  Cursor es un cuadrado relleno
+ * Selects the cursor appearance from three types. The cursor_type
+ * argument indicates the type of cursor to select according to these:
+ *     NOCURSOR     Disables the cursor
+ *     NORMALCURSOR Normal cursor: the underscore character
+ *     SOLIDCURSOR  Cursor is a filled square
  */
 void setcursortype(uint8_t cursor_type) __z88dk_fastcall
 {

@@ -1,11 +1,9 @@
-#include "msx_const.h"
 #include "conio.h"
 
 
 /**
- * Borra la línea donde se encuentre el cursor y mueve todas las líneas 
- * inferiores a una línea anterior. La función delline funciona en la ventana 
- * de texto activa.
+ * Deletes the line where the cursor is located and moves all lower lines
+ * up one line. The delline function works in the active text window.
  */
 void delline()
 {

@@ -1,4 +1,3 @@
-#include "msx_const.h"
 #include "conio.h"
 #include "heap.h"
 #include <stdio.h>
@@ -8,66 +7,77 @@ extern text_info _current_text_info;	// Struct with current text mode info.
 
 int main(char **argv, int argc)
 {
+	char buf[40*24];
+
 	textmode(BW80);
+	textattr(0x00f4);
+	while (kbhit()) getch();
 
 	clrscr();
-	cputs("## clrscr()\r\n");
-	cputs("##############################\r");
+	drawFrame(1,1, 80,11);
+	drawFrame(1,12, 40,23);
+	drawFrame(41,12, 80,23);
+	getch();
+
+	cputs("## clrscr()\n");
+	cputs("##############################");
 	clreol();
-	cputs("## clreol()\r\n");
-	cputs("## cputs()\r\n");
+	cputs("## clreol()\n");
+	cputs("## cputs()\n");
 	printf("## inport(0xc0) = 0x%02X\n", inportb(0xc0));
 	printf("## getch() = '%c'\n", getch());
 	printf("## getche() = '%c'\n", getche());
 
 	gotoxy(1,1);
-	cputs("## gotoxy()\r\n");
+	cputs("## gotoxy()\n");
 	insline(); getch();
-	cputs("## insline()\r\n");
+	cputs("## insline()\n");
 	delline(); getch();
-	cputs("## delline()\r\n");
+	cputs("## delline()\n");
 
 	gotoxy(10,10);
 	int x = wherex(), y = wherey();
-	putch('1');
-	printf(" %u,%u", x, y);
+	putch('1\n');
+	printf("gotoxy %u,%u", x, y);
 	gotoxy(x, y);
-	cputs("2\r\n");
+	cputs("2\n");
 
 	setcursortype(NOCURSOR);
-	cputs("## setcursortype(NOCURSOR)\r\n");
-	while (!kbhit());
+	cputs("## setcursortype(NOCURSOR)\n");
 	getch();
 	setcursortype(NORMALCURSOR);
-	cputs("## setcursortype(NORMALCURSOR)\r\n");
-	while (!kbhit());
+	cputs("## setcursortype(NORMALCURSOR)\n");
 	getch();
 	setcursortype(SOLIDCURSOR);
-	cputs("## setcursortype(SOLIDCURSOR)\r\n");
-	while (!kbhit());
+	cputs("## setcursortype(SOLIDCURSOR)\n");
 	getch();
 
-	char *buf = malloc(40*24);
-	gettext(1, 1, 40, 24, buf);
-	puttext(41, 1, 80, 24, buf);
-	free(40*24);
+	chline(40);
+	cvline(10);
+	getch();
+	gettext(1, 1, 40, 24, &buf);
+	puttext(41, 1, 80, 24, &buf);
 
 	printf("attribute: 0x%04x\n", _current_text_info.attribute);
 
 	textcolor(BLACK);
-	cputs("## textcolor(BLACK)\r\n");
+	cputs("## textcolor(BLACK)\n");
 	textattr(_current_text_info.attribute);
 	getch();
 
 	textbackground(WHITE);
-	cputs("## textbackground(WHITE)\r\n");
-	textattr(_current_text_info.attribute);
+	cputs("## textbackground(WHITE)\n");
 	getch();
 
+//gotoxy(1,1);
 	textattr(0x1af1);
-	cputs("## textattr(0x1af1)\r\n");
-	textattr(_current_text_info.attribute);
-	printf(" hola mundo ");
+	cputs("## textattr(0x1af1)\n");
+	textblink(wherex(), wherey()-1, 40, true);
+	getch();
+	printf(" printf: hola mundo \n");
+	textblink(wherex(), wherey()-2, 40, false);
+	getch();
+	cprintf(" cprintf: hola mundo \n");
 	getch();
 
 	textattr(_current_text_info.normattr);

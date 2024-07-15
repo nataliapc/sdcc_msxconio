@@ -3,18 +3,18 @@
 
 
 /**
- * Lee un solo carácter directamente desde el teclado, sin mostrar tal 
- * carácter en pantalla.
+ * Reads a single character directly from the keyboard, without displaying
+ * the character on the screen.
  * 
- * @return	Retorna el carácter leído desde el teclado.
+ * @return	Returns the character read from the keyboard.
  */
-int getch() __naked
+int getch() __naked __z88dk_fastcall
 {
 	__asm
 		ld c,#INNOE
 		DOSCALL
-		ld h, #0x00
 
+		ld h, #0		; Returns HL
 		ret
 	__endasm;
 }

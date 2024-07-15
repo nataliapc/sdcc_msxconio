@@ -16,7 +16,7 @@ void _applyColors() __naked
 		add a
 		inc hl
 		or (hl)	; #BAKCLR	// Or the BackColor
-		
+
 		ld  l, a			// Call to change RegVDP#7
 		ld  h, #7
 		jp  __setRegVDP
@@ -25,7 +25,7 @@ void _applyColors() __naked
 
 
 //=============================================
-void _setRegVDP(uint16_t portValue) __naked __z88dk_fastcall
+void _setRegVDP(uint16_t portValue) __naked __sdcccall(1)
 {
 	__asm
 		ld  b, l		// Value
@@ -40,7 +40,7 @@ void _setRegVDP(uint16_t portValue) __naked __z88dk_fastcall
 // FILVRM: Fill VRAM with value
 // [Input: A-Data byte|BC-Length|HL-VRAM address]
 // [Changes: AF,BC]
-void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked
+void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked __sdcccall(0)
 {
 	__asm
 		ld  ix,#2
@@ -58,26 +58,21 @@ void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked
 
 
 //=============================================
-uint8_t getByteVRAM(uint16_t vram) __naked __z88dk_fastcall
+uint8_t getByteVRAM(uint16_t vram) __naked __sdcccall(1)
 {
 	__asm
-		ld  ix,#2
-		add ix,sp
-		ld  l, 0(ix)
-		ld  h, 1(ix)
-
+							; HL = Param vram
 		ld  ix, #SETRD
 		BIOSCALL
 
 		in  a, (0x98)
-		ld  l, a
-		ret
+		ret					; Returns A
 	__endasm;
 }
 
 
 //=============================================
-void setByteVRAM(uint16_t vram, uint8_t value) __naked
+void setByteVRAM(uint16_t vram, uint8_t value) __naked __sdcccall(0)
 {
 	__asm
 		ld  ix,#2
@@ -100,7 +95,7 @@ void setByteVRAM(uint16_t vram, uint8_t value) __naked
 // LDIRMV: Block transfer to memory from VRAM
 // [Input: BC-Length|DE-Start memory address|HL-VRAM address]
 // [Changes: ALL]
-void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked
+void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked __sdcccall(0)
 {
 	__asm
 		ld  ix,#2
@@ -134,7 +129,7 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked
 // LDIRVM: Block transfer to VRAM from memory
 // [Input: BC-Length|DE-VRAM address|HL-Start memory address]
 // [Changes: ALL]
-void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked
+void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked __sdcccall(0)
 {
 	__asm
 		ld  ix,#2
@@ -162,17 +157,3 @@ void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked
 		ret
 	__endasm;
 }
-
-
-//=============================================
-void _setBlinkBit()
-{
-	if ((_current_text_info.attribute & 0xff00) == 0) return;
-	uint16_t pos = (ADDR_POINTER_BYTE(CSRY)-1) * _current_text_info.screenwidth + (ADDR_POINTER_BYTE(CSRX)-1);
-	uint8_t bit = 0x80 >> (pos % 8);
-	pos /= 8;
-	pos += ADR_BLINK;
-	setByteVRAM(pos, getByteVRAM(pos) | bit);
-}
-
-

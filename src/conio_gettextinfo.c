@@ -4,9 +4,9 @@
 
 
 /**
- * Obtiene la información de vídeo del modo texto. Esta información es guardada
- * en una estructura apuntada por el argumento *ti. La estructura text_info se 
- * define segun {@link text_info}
+ * Gets the video information of the text mode. This information is stored
+ * in a structure pointed to by the argument *ti. The text_info structure is
+ * defined according to {@link text_info}
  */
 void gettextinfo(text_info *ti)
 {
