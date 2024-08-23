@@ -28,10 +28,13 @@ void _applyColors() __naked
 void _setRegVDP(uint16_t portValue) __naked __sdcccall(1)
 {
 	__asm
+		push ix
 		ld  b, l		// Value
 		ld  c, h		// Port
 		ld ix, #WRTVDP
-		JP_BIOSCALL
+		BIOSCALL
+		pop ix
+		ret
 	__endasm;
 }
 
@@ -43,7 +46,8 @@ void _setRegVDP(uint16_t portValue) __naked __sdcccall(1)
 void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked __sdcccall(0)
 {
 	__asm
-		ld  ix,#2
+		push ix
+		ld  ix,#4
 		add ix,sp
 		ld  l, 0(ix)
 		ld  h, 1(ix)
@@ -52,7 +56,9 @@ void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked __sdcccall(0)
 		ld  a, 4(ix)
 
 		ld ix, #FILVRM
-		JP_BIOSCALL
+		BIOSCALL
+		pop ix
+		ret
 	__endasm;
 }
 
@@ -61,11 +67,10 @@ void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked __sdcccall(0)
 uint8_t getByteVRAM(uint16_t vram) __naked __sdcccall(1)
 {
 	__asm
-							; HL = Param vram
-		ld  ix, #SETRD
+		push ix				; HL = Param vram
+		ld  ix, #RDVRM
 		BIOSCALL
-
-		in  a, (0x98)
+		pop ix
 		ret					; Returns A
 	__endasm;
 }
@@ -75,17 +80,15 @@ uint8_t getByteVRAM(uint16_t vram) __naked __sdcccall(1)
 void setByteVRAM(uint16_t vram, uint8_t value) __naked __sdcccall(0)
 {
 	__asm
-		ld  ix,#2
+		push ix
+		ld  ix,#4
 		add ix,sp
 		ld  l, 0(ix)
 		ld  h, 1(ix)
-		ld  b, 2(ix)
-
-		ld  ix, #SETWRT
+		ld  a, 2(ix)
+		ld  ix, #WRTVRM
 		BIOSCALL
-
-		ld  a,b
-		out (0x98), a
+		pop ix
 		ret
 	__endasm;
 }
@@ -98,7 +101,8 @@ void setByteVRAM(uint16_t vram, uint8_t value) __naked __sdcccall(0)
 void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked __sdcccall(0)
 {
 	__asm
-		ld  ix,#2
+		push ix
+		ld  ix,#4
 		add ix,sp
 		ld  l, 0(ix)
 		ld  h, 1(ix)
@@ -109,8 +113,8 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked __sdc
 
 		ld  ix, #SETRD
 		BIOSCALL
+		pop ix
 
-		di
 		ex  de,hl
 		ld  a,b
 		ld  b,c
@@ -119,7 +123,6 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked __sdc
 		inir
 		dec a
 		jp  pe,.loopVR$
-		ei
 		ret
 	__endasm;
 }
@@ -132,7 +135,8 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked __sdc
 void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked __sdcccall(0)
 {
 	__asm
-		ld  ix,#2
+		push ix
+		ld  ix,#4
 		add ix,sp
 		ld  e, 0(ix)
 		ld  d, 1(ix)
@@ -143,8 +147,8 @@ void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked __sdc
 
 		ld  ix, #SETWRT
 		BIOSCALL
+		pop ix
 
-		di
 		ex  de,hl
 		ld  a,b
 		ld  b,c
@@ -153,7 +157,6 @@ void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked __sdc
 		otir
 		dec a
 		jp  pe,.loopRV$
-		ei
 		ret
 	__endasm;
 }

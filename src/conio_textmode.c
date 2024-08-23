@@ -68,4 +68,7 @@ void textmode(int8_t mode) __z88dk_fastcall
 		ld ix,#INITXT
 		BIOSCALL
 	__endasm;
+
+	// Clear blink data
+	_fillVRAM(ADR_BLINK, 240, 0);
 }

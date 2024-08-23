@@ -6,9 +6,9 @@
  * textblink
  * Activates or deactivates text blinking in a given region.
  */
-void textblink(uint8_t x, uint8_t y, uint8_t length, bool enabled)
+void textblink(uint8_t x, uint8_t y, uint16_t length, bool enabled)
 {
-	uint16_t pos = (y - 1) * _current_text_info.screenwidth + (x - 1);
+	uint16_t pos = ((uint16_t)y - 1) * ((uint16_t)_current_text_info.screenwidth) + ((uint16_t)x - 1);
 	uint16_t address = ADR_BLINK + pos / 8;
 	uint8_t bit = 0x80 >> (pos % 8);
 	uint8_t value;

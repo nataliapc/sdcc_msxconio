@@ -35,6 +35,8 @@ __sfr __at (0x99) IO_VDP2;
 //
 #define CALSLT 	0x01c		// Executes inter-slot call [Input: IY-High byte with slot ID | IX-The address that will be called]
 #define WRTVDP	0x047		// Write data in the VDP-register [Input: B-Data to write | C-Register] [Changes: AF,BC]
+#define RDVRM	0x04a		// Reads the content of VRAM [Input: HL-Address read][Output: A-Data][Changes: AF]
+#define WRTVRM	0x04d		// Writes data in VRAM [Input: HL-Address write|A-Data][Changes:AF]
 #define SETRD	0x050		// Sets VRAM address to read [Input: HL-VRAM address (00000h~03FFFh)][Changes: AF]
 #define SETWRT	0x053		// Sets VRAM address to write [Input: HL-VRAM address (00000h~03FFFh)][Changes: AF]
 #define FILVRM	0x056		// Fill VRAM with value [Input: A-Data byte|BC-Length|HL-VRAM address][Changes: AF,BC]
@@ -43,7 +45,11 @@ __sfr __at (0x99) IO_VDP2;
 #define CHGCLR	0x062		// Changes the screen colors [Input: Foreground color in FORCLR | Background color in BAKCLR | Border color in BDRCLR]
 #define INITXT	0x06c		// Switches to SCREEN 0 (text screen with 40×24 characters)
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]
-
+#define BIGFIL	0x16b		// Same function as FILVRM with 16-bit VRAM-address [Input: A-Data|BC-Length|HL-VRAM address][Changes: AF,BC]
+#define NSETRD	0x16e		// Same function as SETRD with 16-bit VRAM-address [Input: HL-VRAM address (00000h~0FFFFh)][Changes: AF]
+#define NSTWRT	0x171		// Same function as SETWRT with 16-bit VRAM-address [Input: HL-VRAM address (00000h~0FFFFh)][Changes: AF]
+#define NRDVRM	0x174		// Reads VRAM like in RDVRM with 16-bit VRAM-address [Input: HL-VRAM address (00000h~0FFFFh)][Output: A-Data][Changes: F]
+#define NWRVRM	0x177		// Writes to VRAM like in WRTVRM with 16-bit VRAM-address [Input: A-Data|HL-VRAM address (00000h~0FFFFh)][Changes: AF]
 
 // ========================================================
 // MSX-DOS 1.x BIOS

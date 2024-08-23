@@ -3,58 +3,98 @@
 #include "conio.h"
 
 static void _printn(unsigned u, unsigned base, char issigned);
-static uint8_t _printn_long(uint32_t u, unsigned base, char issigned);
-void _printf(const char *format, va_list va);
+static void _printn_long(uint32_t u, unsigned base, char issigned);
+static void _printf(const char *format, va_list va);
+
+static char *_str;
+static char _buffer[10];
+static int _idx = 0;
 
 /*
 	Simple cprintf implementation.
 	Supports %s %c %u %d %l %x %b
- */
+*/
 int cprintf(const char *format, ...)
 {
 	va_list va;
 	va_start(va, format);
 
+	_str = 0;
 	_printf(format, va);
 
 	/* return printed chars */
 	return 0;
 }
 
+/*
+	Simple csprintf implementation.
+	Supports %s %c %u %d %l %x %b
+*/
+int csprintf(char *str, const char *format, ...)
+{
+	va_list va;
+	va_start(va, format);
+
+	_str = str;
+	_printf(format, va);
+	*_str = '\0';
+
+	/* return formatted chars */
+	return _str - str;
+}
+
 const char const _hex[] = "0123456789ABCDEF";
+
+static void _putch(char c)
+{
+	if (_str == 0) {
+		putch(c);
+		return;
+	}
+	*_str++ = c;
+	return;
+}
 
 static void _printn(unsigned u, unsigned base, char issigned)
 {
 	if (issigned && ((int)u < 0)) {
-		putch('-');
+		_putch('-');
 		u = (unsigned)-((int)u);
 	}
-	if (u >= base)
-		_printn(u/base, base, 0);
-	putch(_hex[u%base]);
+
+	do {
+		_buffer[_idx++] = _hex[u % base];
+		u /= base;
+	} while (u);
+	while (_idx) {
+		_putch(_buffer[--_idx]);
+	}
 }
 
-static uint8_t _printn_long(uint32_t u, unsigned base, char issigned)
+static void _printn_long(uint32_t u, unsigned base, char issigned)
 {
 	if (issigned && ((int32_t)u < 0)) {
-		putch('-');
+		_putch('-');
 		u = (uint32_t)-((int32_t)u);
 	}
-	uint8_t num = u;
-	if (u >= base)
-		num = u-_printn_long(u/base, base, 0);
-	putch(_hex[num]);
-	return u*base;
+
+	do {
+		_buffer[_idx++] = _hex[u % base];
+		u /= base;
+	} while (u);
+	while (_idx) {
+		_putch(_buffer[--_idx]);
+	}
 }
 
-void _printf(const char *format, va_list va)
+static void _printf(const char *format, va_list va)
 {
 	while (*format) {
 		if (*format == '%') {
 			switch (*++format) {
 				case 'c': {
 					char c = (char)va_arg(va, int);
-					putch(c);
+					_putch(c);
 					break;
 				}
 				case 'u': {
@@ -91,14 +131,15 @@ void _printf(const char *format, va_list va)
 				case 's': {
 					char *s = va_arg(va, char *);
 					while (*s) {
-						putch(*s);
+						_putch(*s);
 						s++;
 					}
 				}
 			}
 		} else {
-			putch(*format);
+			_putch(*format);
 		}
 		format++;
 	}
+	return;
 }

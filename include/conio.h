@@ -115,12 +115,18 @@ typedef struct {
 #define  VT_CURHALF		"\x1B""y4"	// Cursor to half size
 #define  VT_CURSHOW		"\x1B""y5"	// Shows the cursor
 
-#define  KEY_TAB		 9
-#define  KEY_UP			30
-#define  KEY_DOWN		31
-#define  KEY_RIGHT		28
-#define  KEY_LEFT		29
-#define  KEY_ENTER		13
+#define  KEY_TAB		 9		// CTRL+I - TAB key (tabulation)
+#define  KEY_HOME		11		// CTRL+K - HOME key. Places the cursor at top left
+#define  KEY_ENTER		13		// CTRL+M - RETURN key
+#define  KEY_INSERT		18		// CTRL+R - INSERT key
+#define  KEY_SELECT		24		// CTRL+X - SELECT key
+#define  KEY_ESC		27		// ESC key
+#define  KEY_RIGHT		28		// RIGHT cursor key
+#define  KEY_LEFT		29		// LEFT cursor key
+#define  KEY_UP			30		// UP cursor key
+#define  KEY_DOWN		31		// DOWN cursor key
+#define  KEY_SPACE		32		// SPACE key
+#define  KEY_DELETE		127		// DELETE key
 #endif	//__VT_KEY_CODES__
 
 
@@ -231,7 +237,7 @@ void textbackground(uint8_t color) __z88dk_fastcall;
  * textblink
  * Enables or disables text blinking in a given region.
  */
-void textblink(uint8_t x, uint8_t y, uint8_t length, bool enabled);
+void textblink(uint8_t x, uint8_t y, uint16_t length, bool enabled);
 
 /**
  * textattr
@@ -388,7 +394,7 @@ uint8_t movetext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, uint8
  * Prints the content of a buffer directly on the screen at the
  * indicated position.
  */
-void putlinexy(uint8_t x, uint8_t y, uint8_t length, void *source);
+void putlinexy(uint8_t x, uint8_t y, uint16_t length, void *source);
 
 /**
  * chline
@@ -471,6 +477,12 @@ int putchar(int c) __sdcccall(1);
  * @return	Returns the number of characters written.
  */
 int cprintf(const char *format, ...);
+
+/**
+ * csprintf
+ * Like sprintf but small.
+ */
+int csprintf(char *str, const char *format, ...);
 
 /**
  * cputs
