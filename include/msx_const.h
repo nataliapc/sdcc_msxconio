@@ -147,12 +147,19 @@ __sfr __at (0x99) IO_VDP2;
 #define  VT_CURHALF		"\x1B""y4"	// Cursor to half size
 #define  VT_CURSHOW		"\x1B""y5"	// Shows the cursor
 
-#define  KEY_TAB		 9
-#define  KEY_UP			30
-#define  KEY_DOWN		31
-#define  KEY_RIGHT		28
-#define  KEY_LEFT		29
-#define  KEY_ENTER		13
+#define  KEY_TAB		 9		// CTRL+I - TAB key (tabulation)
+#define  KEY_HOME		11		// CTRL+K - HOME key. Places the cursor at top left
+#define  KEY_RETURN		13		// CTRL+M - RETURN key
+#define  KEY_ENTER		13		//    "         "
+#define  KEY_INSERT		18		// CTRL+R - INSERT key
+#define  KEY_SELECT		24		// CTRL+X - SELECT key
+#define  KEY_ESC		27		// ESC key
+#define  KEY_RIGHT		28		// RIGHT cursor key
+#define  KEY_LEFT		29		// LEFT cursor key
+#define  KEY_UP			30		// UP cursor key
+#define  KEY_DOWN		31		// DOWN cursor key
+#define  KEY_SPACE		32		// SPACE key
+#define  KEY_DELETE		127		// DELETE key
 #endif	//__VT_KEY_CODES__
 
 
