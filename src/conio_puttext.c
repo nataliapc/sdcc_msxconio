@@ -23,7 +23,7 @@
  */
 uint8_t puttext(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, void *source)
 {
-	if (left==right || top==bottom) return 0;
+	if (left>right || top>bottom) return 0;
 	uint16_t pos = _current_text_info.vramCharMap + (top-1) * _current_text_info.screenwidth + left - 1;
 	uint16_t width = right - left + 1;
 	uint16_t aux_buff = (uint16_t)source;
