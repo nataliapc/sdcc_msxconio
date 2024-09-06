@@ -9,19 +9,18 @@
  *     NORMALCURSOR Normal cursor: the underscore character
  *     SOLIDCURSOR  Cursor is a filled square
  */
-void setcursortype(uint8_t cursor_type) __z88dk_fastcall
+void setcursortype(uint8_t cursor_type)
 {
-	switch (cursor_type) {
-		case NOCURSOR:
-			ADDR_POINTER_BYTE(CSRSW) = 0;
-			break;
-		case NORMALCURSOR:
-			ADDR_POINTER_BYTE(CSRSW) = 1;
-			ADDR_POINTER_BYTE(CSTYLE) = 1;
-			break;
-		case SOLIDCURSOR:
-			ADDR_POINTER_BYTE(CSRSW) = 1;
-			ADDR_POINTER_BYTE(CSTYLE) = 0;
-			break;
+	if (cursor_type == NOCURSOR) {
+		ADDR_POINTER_BYTE(CSRSW) = 0;
+	} else
+	if (cursor_type == SOLIDCURSOR) {
+		ADDR_POINTER_BYTE(CSRSW) = 1;
+		ADDR_POINTER_BYTE(CSTYLE) = 0;
+	} else
+	if (cursor_type == NORMALCURSOR) {
+		ADDR_POINTER_BYTE(CSRSW) = 1;
+		ADDR_POINTER_BYTE(CSTYLE) = 1;
 	}
+	putch('\0');
 }
