@@ -15,18 +15,16 @@ _putchar::
 ;uint8_t putch(uint8_t c) __sdcccall(1);
 _putch::
 					; A = Param c
-	cp #'\r'
-	ret z
 	cp #'\n'
 	jr nz, .normalCharPutch
 
 	ld e,#'\r'
-	ld c,#0x02  ;CONOUT
+	ld c,#0x02		;CONOUT
 	push af
 	call 5
 	pop af
 
 .normalCharPutch:
 	ld e,a
-	ld c,#0x02  ;CONOUT
+	ld c,#0x02		;CONOUT
 	jp 5			; Returns A
