@@ -9,6 +9,6 @@
 void clrscr()
 {
 	_fillVRAM(_current_text_info.vramCharMap, 0x800, 32);
-	_fillVRAM(ADR_BLINK, 0xf0, 0);
+	clrblink();
 	gotoxy(_current_text_info.winleft, _current_text_info.wintop);
 }

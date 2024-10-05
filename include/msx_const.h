@@ -14,8 +14,14 @@
 // Tools
 #define DOSCALL     call 5
 #define DOSJP       jp 5
-#define BIOSCALL 	ld iy,(#EXPTBL-1) \
-                	call CALSLT
+#ifndef _ROMBIOS_
+	#define BIOSCALL_LD #
+	#define BIOSCALL(X)	ld ix, BIOSCALL_LD X \
+						ld iy,(EXPTBL-1) \
+						call CALSLT
+#else
+	#define BIOSCALL(X)	call X
+#endif
 #define JP_BIOSCALL ld iy,(#EXPTBL-1) \
                 	jp CALSLT
 #define ASM_HALT	__asm halt __endasm;

@@ -31,8 +31,7 @@ void _setRegVDP(uint16_t portValue) __naked __sdcccall(1)
 		push ix
 		ld  b, l		// Value
 		ld  c, h		// Port
-		ld ix, #WRTVDP
-		BIOSCALL
+		BIOSCALL(WRTVDP)
 		pop ix
 		ret
 	__endasm;
@@ -55,8 +54,7 @@ void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __naked __sdcccall(0)
 		ld  b, 3(ix)
 		ld  a, 4(ix)
 
-		ld ix, #FILVRM
-		BIOSCALL
+		BIOSCALL(FILVRM)
 		pop ix
 		ret
 	__endasm;
@@ -68,8 +66,7 @@ uint8_t getByteVRAM(uint16_t vram) __naked __sdcccall(1)
 {
 	__asm
 		push ix				; HL = Param vram
-		ld  ix, #RDVRM
-		BIOSCALL
+		BIOSCALL(RDVRM)
 		pop ix
 		ret					; Returns A
 	__endasm;
@@ -86,8 +83,7 @@ void setByteVRAM(uint16_t vram, uint8_t value) __naked __sdcccall(0)
 		ld  l, 0(ix)
 		ld  h, 1(ix)
 		ld  a, 2(ix)
-		ld  ix, #WRTVRM
-		BIOSCALL
+		BIOSCALL(WRTVRM)
 		pop ix
 		ret
 	__endasm;
@@ -110,19 +106,25 @@ void _copyVRAMtoRAM(uint16_t vram, uint16_t memory, uint16_t size) __naked __sdc
 		ld  d, 3(ix)
 		ld  c, 4(ix)
 		ld  b, 5(ix)
-
-		ld  ix, #SETRD
-		BIOSCALL
+		BIOSCALL(SETRD)
 		pop ix
 
 		ex  de,hl
-		ld  a,b
-		ld  b,c
-		ld  c,#0x98
-.loopVR$:
-		inir
+		xor a				; decrement b if c==0
+		or  c
+		jr  nz, .vr_no_dec_b
+		dec b
+
+.vr_no_dec_b:
+		ld a, b
+		ld b, c
+		ld c, #0x98
+
+.vr_loop:
+		ini					; receive data (HL) from port 98h
+		jp nz,.vr_loop		; the inner loop is exactly 29 cycles. If you are not in VBLANK this is the max speed for msx1. 
 		dec a
-		jp  pe,.loopVR$
+		jp p,.vr_loop
 		ret
 	__endasm;
 }
@@ -144,19 +146,25 @@ void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __naked __sdc
 		ld  h, 3(ix)
 		ld  c, 4(ix)
 		ld  b, 5(ix)
-
-		ld  ix, #SETWRT
-		BIOSCALL
+		BIOSCALL(SETWRT)
 		pop ix
 
 		ex  de,hl
-		ld  a,b
-		ld  b,c
-		ld  c,#0x98
-.loopRV$:
-		otir
+		xor a				; decrement b if c==0
+		or  c
+		jr  nz, .rv_no_dec_b
+		dec b
+
+.rv_no_dec_b:
+		ld a, b
+		ld b, c
+		ld c, #0x98
+
+.rv_loop:
+		outi				; send the data (HL) to port 98h
+		jp nz,.rv_loop		; the inner loop is exactly 29 cycles. If you are not in VBLANK this is the max speed for msx1. 
 		dec a
-		jp  pe,.loopRV$
+		jp p,.rv_loop
 		ret
 	__endasm;
 }

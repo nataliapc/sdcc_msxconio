@@ -35,9 +35,11 @@ LDFLAGS = -rc
 CRT = $(OBJDIR)crt0msx_msxdos_advanced.s.rel
 
 #DEBUG = -DDEBUG
+# -D_ROMBIOS_
+DEFINES :=
 FULLOPT :=  --max-allocs-per-node 2000000
 CCFLAGS :=  --code-loc 0x0180 --data-loc 0 --no-std-crt0 --out-fmt-ihx --fomit-frame-pointer --opt-code-speed \
-			--disable-warning 196 --disable-warning 85 -mz80 $(FULLOPT) $(DEBUG) $(EXTERNFLAGS)
+			--disable-warning 196 --disable-warning 85 -mz80 $(FULLOPT) $(DEBUG) $(DEFINES) $(EXTERNFLAGS)
 
 LIBS = $(LIBDIR)conio.lib
 TEST = test.com
