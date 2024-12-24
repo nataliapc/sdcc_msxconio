@@ -134,6 +134,15 @@ static void _printf(const char *format, va_list va)
 						_putch(*s);
 						s++;
 					}
+					break;
+				}
+				case '%': {
+					_putch('%');
+					break;
+				}
+				default: {
+					format--;
+					break;
 				}
 			}
 		} else {
