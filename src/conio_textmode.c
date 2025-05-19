@@ -86,7 +86,9 @@ void textmode(int8_t mode) __z88dk_fastcall
 	ADDR_POINTER_BYTE(LINL40) = _current_text_info.screenwidth;
 	ADDR_POINTER_BYTE(CRTCNT) = _current_text_info.screenheight;
 	__asm
+		push ix
 		BIOSCALL(INITXT)
+		pop  ix
 	__endasm;
 
 	// Clear blink data
