@@ -129,6 +129,9 @@ __sfr __at (0x99) IO_VDP2;
 #define EXPTBL		0xfcc1	// (BYTE) BIOS slot
 #define RG9SAV		0xffe8	// (BYTE) Mirror of VDP register 9 (Basic: VDP(10), note: +1)
 
+volatile __at (PUTPNT) uint16_t varPUTPNT;
+volatile __at (GETPNT) uint16_t varGETPNT;
+
 
 // ========================================================
 // MSX character codes and compatible sentences VT-52

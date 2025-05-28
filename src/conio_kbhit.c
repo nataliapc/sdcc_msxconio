@@ -12,5 +12,5 @@
  */
 bool kbhit()
 {
-	return ADDR_POINTER_BYTE(PUTPNT) != ADDR_POINTER_BYTE(GETPNT);
+	return varPUTPNT != varGETPNT;
 }
