@@ -1,3 +1,5 @@
+// Based on the source code of:
+// https://github.com/Konamiman/MSX/blob/master/SRC/SDCC/char/printf_simple.c
 #include <stdarg.h>
 #include <stdint.h>
 #include "conio.h"
