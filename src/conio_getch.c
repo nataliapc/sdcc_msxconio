@@ -8,7 +8,7 @@
  * 
  * @return	Returns the character read from the keyboard.
  */
-int getch() __naked __z88dk_fastcall
+int getch(void) __naked __z88dk_fastcall
 {
 	__asm
 		ld c,#INNOE

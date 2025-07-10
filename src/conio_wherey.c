@@ -9,7 +9,7 @@
  * @return	The wherey function returns an integer between 1 and the number
  * 			of rows in the current text mode.
  */
-uint8_t wherey() __naked __sdcccall(1)
+uint8_t wherey(void) __naked __sdcccall(1)
 {
 	__asm
 		ld  a,(#CSRY)

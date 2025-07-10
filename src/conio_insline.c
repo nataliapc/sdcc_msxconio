@@ -7,7 +7,7 @@
  * empty one are moved one line down, and the bottom line is moved
  * out of the window.
  */
-void insline()
+void insline(void)
 {
 	cputs(VT_INSLINE);
 }

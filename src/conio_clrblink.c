@@ -5,7 +5,7 @@
 /**
  * This function clears fullscreen text blinking.
  */
-void clrblink()
+void clrblink(void)
 {
 	if (_current_text_info.vramBlink) {
 		_fillVRAM(ADR_BLINK, 240, 0);

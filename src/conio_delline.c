@@ -5,7 +5,7 @@
  * Deletes the line where the cursor is located and moves all lower lines
  * up one line. The delline function works in the active text window.
  */
-void delline()
+void delline(void)
 {
 	cputs(VT_DELLINE);
 }

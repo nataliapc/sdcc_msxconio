@@ -6,7 +6,7 @@
  * This function clears the current text window and places the cursor in the
  * upper left corner: position (1,1).
  */
-void clrscr()
+void clrscr(void)
 {
 	_fillVRAM(_current_text_info.vramCharMap, 0x800, 32);
 	clrblink();

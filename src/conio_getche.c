@@ -8,7 +8,7 @@
  *
  * @return	The getche function returns the character read from the keyboard.
  */
-int getche() __naked __z88dk_fastcall
+int getche(void) __naked __z88dk_fastcall
 {
 	__asm
 		ld c,#CONIN

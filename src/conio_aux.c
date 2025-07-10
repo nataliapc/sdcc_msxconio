@@ -5,7 +5,7 @@
 
 
 //=============================================
-void _applyColors() __naked
+void _applyColors(void) __naked
 {
 	__asm
 		ld hl, #FORCLR		// Read ForeColor

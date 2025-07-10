@@ -6,7 +6,7 @@
  * to the end of the line within the current text window, without moving
  * the cursor position.
  */
-void clreol()
+void clreol(void)
 {
 	cputs(VT_CLREOL);
 }

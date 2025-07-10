@@ -9,7 +9,7 @@
  * @return	The wherex function returns an integer between 1 and the number
  * 			of columns in the current text mode.
  */
-uint8_t wherex() __naked __sdcccall(1)
+uint8_t wherex(void) __naked __sdcccall(1)
 {
 	__asm
 		ld  a,(#CSRX)

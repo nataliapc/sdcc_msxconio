@@ -10,7 +10,7 @@
  * 			if one is available, then the returned value is
  * 			different from zero.
  */
-bool kbhit()
+bool kbhit(void)
 {
 	return varPUTPNT != varGETPNT;
 }
